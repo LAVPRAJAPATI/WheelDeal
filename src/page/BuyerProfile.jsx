@@ -18,7 +18,7 @@ export default function BuyerProfile() {
 
   const handleEdit = () => {
     setIsEditing(true);
-  };
+  };  
 
   const handleUpdate = () => {
     setIsEditing(false);
