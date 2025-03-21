@@ -2,7 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Button, TextField, Container, Grid, Card, CardMedia, CardContent, CardActions, Box } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-const Homepage = () => {
+function Homepage ()  {
   const featuredCars = [
     { id: 1, name: 'Toyota Camry 2021', price: '₹18,50,000', image: 'https://via.placeholder.com/400' },
     { id: 2, name: 'Honda Civic 2020', price: '₹15,00,000', image: 'https://via.placeholder.com/400' },
@@ -40,7 +40,7 @@ const Homepage = () => {
           <Typography variant="h5" paragraph>
             Your one-stop destination for buying and selling cars
           </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          {/* <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
             <TextField
               variant="outlined"
               placeholder="Search for cars..."
@@ -49,7 +49,7 @@ const Homepage = () => {
             <Button variant="contained" color="secondary" startIcon={<SearchIcon />} sx={{ borderRadius: 3, px: 4, fontSize: '1rem' }}>
               Search
             </Button>
-          </Box>
+          </Box> */}
         </Container>
       </Box>
 

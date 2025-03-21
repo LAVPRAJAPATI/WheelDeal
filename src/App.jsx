@@ -19,7 +19,7 @@ function App() {
        <BrowserRouter>
         <Navbar />
           <Routes>
-            <Route path="/Hompage" Component={Homepage}/>
+            <Route path="/Homepage" Component={Homepage}/>
             <Route path="/Buyer/Profile" Component={BuyerProfile}/>
             <Route path="/Seller/Profile" Component={SellerProfile}/>
             <Route path="/Seller/Login" Component={SellerLogin}/>
