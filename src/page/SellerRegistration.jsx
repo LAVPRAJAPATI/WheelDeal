@@ -26,7 +26,7 @@ function SellerRegistration() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f4f6f9",
+        backgroundColor: "#1a2b45", // Dark blue background
       }}
     >
       <form
@@ -34,9 +34,9 @@ function SellerRegistration() {
           width: "80%",
           maxWidth: "500px",
           padding: "20px",
-          background: "#ffffff",
+          background: "#2c3e66", // Slightly lighter dark blue for form
           borderRadius: "12px",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // Darker shadow
         }}
       >
         <Typography
@@ -45,7 +45,7 @@ function SellerRegistration() {
             textAlign: "center",
             fontSize: "28px",
             fontWeight: "bold",
-            color: "#333",
+            color: "#a3bffa", // Light blue for text contrast
             marginBottom: "20px",
           }}
         >
@@ -80,8 +80,8 @@ function SellerRegistration() {
                 padding: "12px",
                 fontSize: "16px",
                 borderRadius: "5px",
-                backgroundColor:"limegreen",
-                color: "white",
+                backgroundColor: "#4c68d7", // Medium blue button
+                color: "#ffffff",
               }}
               onClick={() => console.log("Form Data:", formData)}
             >
@@ -95,4 +95,3 @@ function SellerRegistration() {
 }
 
 export default SellerRegistration;
-

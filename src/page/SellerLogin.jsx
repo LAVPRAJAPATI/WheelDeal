@@ -22,7 +22,7 @@ function SellerLogin() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f4f6f9",
+        backgroundColor: "#1a2b45", // Dark blue background
       }}
     >
       <form
@@ -30,9 +30,9 @@ function SellerLogin() {
           width: "80%",
           maxWidth: "400px",
           padding: "20px",
-          background: "#ffffff",
+          background: "#2c3e66", // Slightly lighter dark blue for form
           borderRadius: "12px",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // Darker shadow
         }}
       >
         <Typography
@@ -41,7 +41,7 @@ function SellerLogin() {
             textAlign: "center",
             fontSize: "28px",
             fontWeight: "bold",
-            color: "#333",
+            color: "#a3bffa", // Light blue for text contrast
             marginBottom: "20px",
           }}
         >
@@ -50,10 +50,70 @@ function SellerLogin() {
 
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField name="Email" type="email" fullWidth label="Email" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Email"
+              type="email"
+              fullWidth
+              label="Email"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "#ffffff", // White background
+                  "& fieldset": {
+                    borderColor: "#ffffff", // White border
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#e0e0e0", // Light gray on hover
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#a3bffa", // Light blue when focused
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "#000000", // Black text for contrast
+                },
+                "& .MuiInputLabel-root": {
+                  color: "#666666", // Gray label
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#a3bffa", // Light blue when focused
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="Password" type="password" fullWidth label="Password" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Password"
+              type="password"
+              fullWidth
+              label="Password"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "#ffffff",
+                  "& fieldset": {
+                    borderColor: "#ffffff",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#e0e0e0",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#a3bffa",
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "#000000",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "#666666",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#a3bffa",
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
             <Button
@@ -64,8 +124,8 @@ function SellerLogin() {
                 padding: "12px",
                 fontSize: "16px",
                 borderRadius: "5px",
-                backgroundColor: "#007bff",
-                color: "white",
+                backgroundColor: "#4c68d7", // Medium blue button
+                color: "#ffffff",
               }}
               onClick={() => console.log("Login Data:", formData)}
             >

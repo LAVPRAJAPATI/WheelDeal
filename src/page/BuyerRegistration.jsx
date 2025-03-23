@@ -26,7 +26,7 @@ function BuyerRegistration() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f4f6f9",
+        backgroundColor: "black",
       }}
     >
       <form
@@ -34,9 +34,9 @@ function BuyerRegistration() {
           width: "80%",
           maxWidth: "500px",
           padding: "20px",
-          background: "#ffffff",
+          background: "#2c3e66",
           borderRadius: "12px",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
         }}
       >
         <Typography
@@ -45,7 +45,7 @@ function BuyerRegistration() {
             textAlign: "center",
             fontSize: "28px",
             fontWeight: "bold",
-            color: "#333",
+            color: "#a3bffa",
             marginBottom: "20px",
           }}
         >
@@ -54,22 +54,199 @@ function BuyerRegistration() {
 
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField name="Name" fullWidth label="Full Name" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Name"
+              fullWidth
+              label="Full Name"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "#ffffff", // White background
+                  "& fieldset": {
+                    borderColor: "#ffffff", // White border
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#e0e0e0", // Light gray on hover
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#a3bffa", // Light blue when focused
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "#000000", // Black text for contrast
+                },
+                "& .MuiInputLabel-root": {
+                  color: "#666666", // Gray label
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#a3bffa", // Light blue when focused
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="Address" fullWidth label="Address" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Address"
+              fullWidth
+              label="Address"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "#ffffff",
+                  "& fieldset": {
+                    borderColor: "#ffffff",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#e0e0e0",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#a3bffa",
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "#000000",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "#666666",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#a3bffa",
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="City" fullWidth label="City" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="City"
+              fullWidth
+              label="City"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "#ffffff",
+                  "& fieldset": {
+                    borderColor: "#ffffff",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#e0e0e0",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#a3bffa",
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "#000000",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "#666666",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#a3bffa",
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="Email" type="email" fullWidth label="Email" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Email"
+              type="email"
+              fullWidth
+              label="Email"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "#ffffff",
+                  "& fieldset": {
+                    borderColor: "#ffffff",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#e0e0e0",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#a3bffa",
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "#000000",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "#666666",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#a3bffa",
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="Mobile" type="tel" fullWidth label="Mobile Number" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Mobile"
+              type="tel"
+              fullWidth
+              label="Mobile Number"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "#ffffff",
+                  "& fieldset": {
+                    borderColor: "#ffffff",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#e0e0e0",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#a3bffa",
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "#000000",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "#666666",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#a3bffa",
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="Password" type="password" fullWidth label="Password" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Password"
+              type="password"
+              fullWidth
+              label="Password"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "#ffffff",
+                  "& fieldset": {
+                    borderColor: "#ffffff",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#e0e0e0",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#a3bffa",
+                  },
+                },
+                "& .MuiInputBase-input": {
+                  color: "#000000",
+                },
+                "& .MuiInputLabel-root": {
+                  color: "#666666",
+                },
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "#a3bffa",
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
             <Button
@@ -80,8 +257,8 @@ function BuyerRegistration() {
                 padding: "12px",
                 fontSize: "16px",
                 borderRadius: "5px",
-                backgroundColor:"limegreen",
-                color: "white",
+                backgroundColor: "#4c68d7",
+                color: "#ffffff",
               }}
               onClick={() => console.log("Form Data:", formData)}
             >
@@ -95,9 +272,6 @@ function BuyerRegistration() {
 }
 
 export default BuyerRegistration;
-
-
-
 
 
 // import React, { useState } from "react";
