@@ -54,7 +54,7 @@ function SellerRegisterVehicles() {
   };
 
   return (
-    <Container >
+    <Container sx={{ mt: 10 }}> {/* Added margin-top to create space below navbar */}
       <form style={formStyle}>
         <Typography 
           variant="h4" 
