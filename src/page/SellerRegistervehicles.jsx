@@ -27,50 +27,40 @@ function SellerRegisterVehicles() {
   const formStyle = {
     width: "100%",
     padding: "40px",
-    background: "linear-gradient(135deg, #003366 0%, #004080 100%)",
+    background: "#FAFAFA", // Matches Homepage card background
     borderRadius: "15px",
     boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.6)",
-    color: "#FFFFFF",
-    border: "1px solid rgba(0, 191, 255, 0.2)"
+    color: "#757575", // Matches Homepage secondary text
+    border: "1px solid #E0E0E0" // Matches Homepage About Us background
   };
 
   const inputStyle = {
-    input: { color: "#FFFFFF" },
+    input: { color: "#757575" }, // Matches Homepage secondary text
     "& .MuiOutlinedInput-root": {
-      "& fieldset": { borderColor: "rgba(0, 191, 255, 0.5)" },
-      "&:hover fieldset": { borderColor: "#00BFFF" },
-      "&.Mui-focused fieldset": { borderColor: "#00BFFF" }
+      "& fieldset": { borderColor: "#1976D2" }, // Matches Homepage primary
+      "&:hover fieldset": { borderColor: "#1565C0" }, // Darker primary on hover
+      "&.Mui-focused fieldset": { borderColor: "#1976D2" } // Matches Homepage primary
     },
-    "& .MuiInputLabel-root": { color: "rgba(255, 255, 255, 0.7)" },
-    "& .MuiInputLabel-root.Mui-focused": { color: "#00BFFF" }
+    "& .MuiInputLabel-root": { color: "#757575" }, // Matches Homepage secondary text
+    "& .MuiInputLabel-root.Mui-focused": { color: "#1976D2" } // Matches Homepage primary
   };
 
   const selectStyle = {
-    color: "#FFFFFF",
-    "& .MuiSvgIcon-root": { color: "#00BFFF" },
-    "&:before": { borderColor: "rgba(0, 191, 255, 0.5)" },
-    "&:after": { borderColor: "#00BFFF" },
-    "&:hover:not(.Mui-disabled):before": { borderColor: "#00BFFF" }
+    color: "#757575", // Matches Homepage secondary text
+    "& .MuiSvgIcon-root": { color: "#1976D2" }, // Matches Homepage primary
+    "&:before": { borderColor: "#1976D2" }, // Matches Homepage primary
+    "&:after": { borderColor: "#1976D2" }, // Matches Homepage primary
+    "&:hover:not(.Mui-disabled):before": { borderColor: "#1565C0" } // Darker primary on hover
   };
 
   return (
-    <Container 
-      maxWidth="md" 
-      sx={{ 
-        minHeight: "100vh", 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        background: "linear-gradient(to bottom, #001F3F, #003366)",
-        padding: "20px"
-      }}
-    >
+    <Container >
       <form style={formStyle}>
         <Typography 
           variant="h4" 
           align="center" 
           sx={{ 
-            color: "#00BFFF", 
+            color: "#1976D2", // Matches Homepage primary
             marginBottom: "30px",
             fontWeight: "bold",
             letterSpacing: "1px",
@@ -112,7 +102,7 @@ function SellerRegisterVehicles() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
-              <InputLabel sx={{ color: "#00BFFF" }}>Vehicle Type</InputLabel>
+              <InputLabel sx={{ color: "#757575" }}>Vehicle Type</InputLabel>
               <Select 
                 name="Vehicletype" 
                 label="Vehicle Type" 
@@ -168,7 +158,7 @@ function SellerRegisterVehicles() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
-              <InputLabel sx={{ color: "#00BFFF" }}>Fuel Type</InputLabel>
+              <InputLabel sx={{ color: "#757575" }}>Fuel Type</InputLabel>
               <Select 
                 name="Fuel" 
                 label="Fuel Type" 
@@ -185,7 +175,7 @@ function SellerRegisterVehicles() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
-              <InputLabel sx={{ color: "#00BFFF" }}>Transmission Type</InputLabel>
+              <InputLabel sx={{ color: "#757575" }}>Transmission Type</InputLabel>
               <Select 
                 name="Transmissiontype" 
                 label="Transmission Type" 
@@ -222,13 +212,13 @@ function SellerRegisterVehicles() {
               fullWidth 
               variant="contained" 
               sx={{ 
-                bgcolor: "#00BFFF",
-                color: "#FFFFFF",
+                bgcolor: "#1976D2", // Matches Homepage primary
+                color: "#FFFFFF", // Matches Homepage button text
                 padding: "12px",
                 fontWeight: "bold",
                 letterSpacing: "1px",
                 '&:hover': { 
-                  bgcolor: "#009ACD",
+                  bgcolor: "#1565C0", // Darker primary on hover
                   transform: "translateY(-2px)",
                   transition: "all 0.3s ease"
                 }

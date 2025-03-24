@@ -22,7 +22,7 @@ function SellerLogin() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#1a2b45", // Dark blue background
+        backgroundColor: "white", // Matches Homepage Footer
       }}
     >
       <form
@@ -30,9 +30,9 @@ function SellerLogin() {
           width: "80%",
           maxWidth: "400px",
           padding: "20px",
-          background: "#2c3e66", // Slightly lighter dark blue for form
+          background: "#FAFAFA", // Matches Homepage card background
           borderRadius: "12px",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // Darker shadow
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
         }}
       >
         <Typography
@@ -41,7 +41,7 @@ function SellerLogin() {
             textAlign: "center",
             fontSize: "28px",
             fontWeight: "bold",
-            color: "#a3bffa", // Light blue for text contrast
+            color: "#1976D2", // Matches Homepage primary
             marginBottom: "20px",
           }}
         >
@@ -59,25 +59,25 @@ function SellerLogin() {
               onChange={handleChange}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  backgroundColor: "#ffffff", // White background
+                  backgroundColor: "#FFFFFF", // Matches Homepage TextField background
                   "& fieldset": {
-                    borderColor: "#ffffff", // White border
+                    borderColor: "#1976D2", // Matches Homepage primary
                   },
                   "&:hover fieldset": {
-                    borderColor: "#e0e0e0", // Light gray on hover
+                    borderColor: "#1565C0", // Darker primary on hover
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#a3bffa", // Light blue when focused
+                    borderColor: "#1976D2", // Matches Homepage primary
                   },
                 },
                 "& .MuiInputBase-input": {
-                  color: "#000000", // Black text for contrast
+                  color: "#757575", // Matches Homepage secondary text
                 },
                 "& .MuiInputLabel-root": {
-                  color: "#666666", // Gray label
+                  color: "#757575", // Matches Homepage secondary text
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#a3bffa", // Light blue when focused
+                  color: "#1976D2", // Matches Homepage primary
                 },
               }}
             />
@@ -92,25 +92,25 @@ function SellerLogin() {
               onChange={handleChange}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  backgroundColor: "#ffffff",
+                  backgroundColor: "#FFFFFF",
                   "& fieldset": {
-                    borderColor: "#ffffff",
+                    borderColor: "#1976D2",
                   },
                   "&:hover fieldset": {
-                    borderColor: "#e0e0e0",
+                    borderColor: "#1565C0",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#a3bffa",
+                    borderColor: "#1976D2",
                   },
                 },
                 "& .MuiInputBase-input": {
-                  color: "#000000",
+                  color: "#757575",
                 },
                 "& .MuiInputLabel-root": {
-                  color: "#666666",
+                  color: "#757575",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#a3bffa",
+                  color: "#1976D2",
                 },
               }}
             />
@@ -124,8 +124,8 @@ function SellerLogin() {
                 padding: "12px",
                 fontSize: "16px",
                 borderRadius: "5px",
-                backgroundColor: "#4c68d7", // Medium blue button
-                color: "#ffffff",
+                backgroundColor: "#1976D2", // Matches Homepage primary
+                color: "#FFFFFF", // Matches Homepage button text
               }}
               onClick={() => console.log("Login Data:", formData)}
             >

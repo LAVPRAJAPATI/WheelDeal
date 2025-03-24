@@ -26,7 +26,7 @@ function SellerRegistration() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#1a2b45", // Dark blue background
+        backgroundColor: "white", // Matches Homepage Footer
       }}
     >
       <form
@@ -34,9 +34,9 @@ function SellerRegistration() {
           width: "80%",
           maxWidth: "500px",
           padding: "20px",
-          background: "#2c3e66", // Slightly lighter dark blue for form
+          background: "#FAFAFA", // Matches Homepage card background
           borderRadius: "12px",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)", // Darker shadow
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
         }}
       >
         <Typography
@@ -45,7 +45,7 @@ function SellerRegistration() {
             textAlign: "center",
             fontSize: "28px",
             fontWeight: "bold",
-            color: "#a3bffa", // Light blue for text contrast
+            color: "#1976D2", // Matches Homepage primary
             marginBottom: "20px",
           }}
         >
@@ -61,13 +61,13 @@ function SellerRegistration() {
               variant="outlined"
               onChange={handleChange}
               sx={{
-                "& .MuiInputBase-input": { color: "#ffffff" }, // Text color (entered text)
-                "& .MuiInputLabel-root": { color: "#a3bffa" }, // Label color
+                "& .MuiInputBase-input": { color: "#757575" }, // Matches Homepage secondary text
+                "& .MuiInputLabel-root": { color: "#757575" }, // Matches Homepage secondary text
                 "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#a3bffa" }, // Border color
-                  "&:hover fieldset": { borderColor: "#4c68d7" }, // Hover border color
-                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" }, // Focused border color
-                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 }, // Placeholder color
+                  "& fieldset": { borderColor: "#1976D2" }, // Matches Homepage primary
+                  "&:hover fieldset": { borderColor: "#1565C0" }, // Darker primary on hover
+                  "&.Mui-focused fieldset": { borderColor: "#1976D2" }, // Matches Homepage primary
+                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 }, // Matches Homepage secondary text
                 },
               }}
             />
@@ -80,13 +80,13 @@ function SellerRegistration() {
               variant="outlined"
               onChange={handleChange}
               sx={{
-                "& .MuiInputBase-input": { color: "#ffffff" },
-                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiInputBase-input": { color: "#757575" },
+                "& .MuiInputLabel-root": { color: "#757575" },
                 "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#a3bffa" },
-                  "&:hover fieldset": { borderColor: "#4c68d7" },
-                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
-                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                  "& fieldset": { borderColor: "#1976D2" },
+                  "&:hover fieldset": { borderColor: "#1565C0" },
+                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
+                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
                 },
               }}
             />
@@ -99,13 +99,13 @@ function SellerRegistration() {
               variant="outlined"
               onChange={handleChange}
               sx={{
-                "& .MuiInputBase-input": { color: "#ffffff" },
-                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiInputBase-input": { color: "#757575" },
+                "& .MuiInputLabel-root": { color: "#757575" },
                 "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#a3bffa" },
-                  "&:hover fieldset": { borderColor: "#4c68d7" },
-                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
-                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                  "& fieldset": { borderColor: "#1976D2" },
+                  "&:hover fieldset": { borderColor: "#1565C0" },
+                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
+                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
                 },
               }}
             />
@@ -119,13 +119,13 @@ function SellerRegistration() {
               variant="outlined"
               onChange={handleChange}
               sx={{
-                "& .MuiInputBase-input": { color: "#ffffff" },
-                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiInputBase-input": { color: "#757575" },
+                "& .MuiInputLabel-root": { color: "#757575" },
                 "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#a3bffa" },
-                  "&:hover fieldset": { borderColor: "#4c68d7" },
-                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
-                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                  "& fieldset": { borderColor: "#1976D2" },
+                  "&:hover fieldset": { borderColor: "#1565C0" },
+                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
+                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
                 },
               }}
             />
@@ -139,13 +139,13 @@ function SellerRegistration() {
               variant="outlined"
               onChange={handleChange}
               sx={{
-                "& .MuiInputBase-input": { color: "#ffffff" },
-                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiInputBase-input": { color: "#757575" },
+                "& .MuiInputLabel-root": { color: "#757575" },
                 "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#a3bffa" },
-                  "&:hover fieldset": { borderColor: "#4c68d7" },
-                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
-                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                  "& fieldset": { borderColor: "#1976D2" },
+                  "&:hover fieldset": { borderColor: "#1565C0" },
+                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
+                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
                 },
               }}
             />
@@ -159,13 +159,13 @@ function SellerRegistration() {
               variant="outlined"
               onChange={handleChange}
               sx={{
-                "& .MuiInputBase-input": { color: "#ffffff" },
-                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiInputBase-input": { color: "#757575" },
+                "& .MuiInputLabel-root": { color: "#757575" },
                 "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#a3bffa" },
-                  "&:hover fieldset": { borderColor: "#4c68d7" },
-                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
-                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                  "& fieldset": { borderColor: "#1976D2" },
+                  "&:hover fieldset": { borderColor: "#1565C0" },
+                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
+                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
                 },
               }}
             />
@@ -179,8 +179,8 @@ function SellerRegistration() {
                 padding: "12px",
                 fontSize: "16px",
                 borderRadius: "5px",
-                backgroundColor: "#4c68d7", // Medium blue button
-                color: "#ffffff",
+                backgroundColor: "#1976D2", // Matches Homepage primary
+                color: "#FFFFFF", // Matches Homepage button text
               }}
               onClick={() => console.log("Form Data:", formData)}
             >

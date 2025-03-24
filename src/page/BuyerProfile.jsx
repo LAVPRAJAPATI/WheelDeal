@@ -27,23 +27,80 @@ export default function BuyerProfile() {
 
   return (
     <Container maxWidth="sm" sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Paper elevation={5} sx={{ p: 4, bgcolor: '#f9f9f9', color: '#333', borderRadius: 3, width: '100%' }}>
-        <Typography variant="h5" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#005792' }}>
+      <Paper elevation={5} sx={{ p: 4, bgcolor: '#FAFAFA', color: '#757575', borderRadius: 3, width: '100%' }}>
+        <Typography variant="h5" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#1976D2' }}>
           Buyer Profile
         </Typography>
         <Box>
-          <TextField fullWidth label="Name" name="name" value={userData.name} onChange={handleChange} margin="normal" disabled={!isEditing} sx={{ bgcolor: '#ffffff', borderRadius: 1, input: { color: '#333' }, label: { color: '#555' } }} />
-          <TextField fullWidth label="Email" name="email" type="email" value={userData.email} onChange={handleChange} margin="normal" disabled={!isEditing} sx={{ bgcolor: '#ffffff', borderRadius: 1, input: { color: '#333' }, label: { color: '#555' } }} />
-          <TextField fullWidth label="Address" name="address" value={userData.address} onChange={handleChange} margin="normal" disabled={!isEditing} sx={{ bgcolor: '#ffffff', borderRadius: 1, input: { color: '#333' }, label: { color: '#555' } }} />
-          <TextField fullWidth label="Mobile" name="mobile" type="tel" value={userData.mobile} onChange={handleChange} margin="normal" disabled={!isEditing} sx={{ bgcolor: '#ffffff', borderRadius: 1, input: { color: '#333' }, label: { color: '#555' } }} />
-          <TextField fullWidth label="City" name="city" value={userData.city} onChange={handleChange} margin="normal" disabled={!isEditing} sx={{ bgcolor: '#ffffff', borderRadius: 1, input: { color: '#333' }, label: { color: '#555' } }} />
+          <TextField 
+            fullWidth 
+            label="Name" 
+            name="name" 
+            value={userData.name} 
+            onChange={handleChange} 
+            margin="normal" 
+            disabled={!isEditing} 
+            sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
+          />
+          <TextField 
+            fullWidth 
+            label="Email" 
+            name="email" 
+            type="email" 
+            value={userData.email} 
+            onChange={handleChange} 
+            margin="normal" 
+            disabled={!isEditing} 
+            sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
+          />
+          <TextField 
+            fullWidth 
+            label="Address" 
+            name="address" 
+            value={userData.address} 
+            onChange={handleChange} 
+            margin="normal" 
+            disabled={!isEditing} 
+            sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
+          />
+          <TextField 
+            fullWidth 
+            label="Mobile" 
+            name="mobile" 
+            type="tel" 
+            value={userData.mobile} 
+            onChange={handleChange} 
+            margin="normal" 
+            disabled={!isEditing} 
+            sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
+          />
+          <TextField 
+            fullWidth 
+            label="City" 
+            name="city" 
+            value={userData.city} 
+            onChange={handleChange} 
+            margin="normal" 
+            disabled={!isEditing} 
+            sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
+          />
         </Box>
         {!isEditing ? (
-          <Button variant="contained" fullWidth onClick={handleEdit} sx={{ mt: 3, bgcolor: '#005792', color: '#fff', '&:hover': { bgcolor: '#004170' } }}>
+          <Button 
+            variant="contained" 
+            fullWidth 
+            onClick={handleEdit} 
+            sx={{ mt: 3, bgcolor: '#1976D2', color: '#FFFFFF', '&:hover': { bgcolor: '#1565C0' } }}
+          >
             Edit Profile
           </Button>
         ) : (
-          <Button variant="contained" fullWidth onClick={handleUpdate} sx={{ mt: 3, bgcolor: '#005792', color: '#fff', '&:hover': { bgcolor: '#004170' } }}>
+          <Button 
+            variant="contained" 
+            fullWidth 
+            onClick={handleUpdate} 
+            sx={{ mt: 3, bgcolor: '#1976D2', color: '#FFFFFF', '&:hover': { bgcolor: '#1565C0' } }}
+          >
             Update Profile
           </Button>
         )}

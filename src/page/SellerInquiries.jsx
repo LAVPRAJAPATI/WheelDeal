@@ -6,7 +6,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import { Box } from '@mui/material';
+import { Box, AppBar, Toolbar, Container } from '@mui/material';
 
 const inquiries = [
   {
@@ -43,37 +43,41 @@ const inquiries = [
 
 export default function SellerInquiries() {
   return (
-    <Box sx={{ p: 4, backgroundColor: '#0A192F', minHeight: '100vh' }}>
-      <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#ffffff' }}>
-        Seller Inquiries
-      </Typography>
-      <Grid container spacing={2} justifyContent="center">
-        {inquiries.map((inquiry, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card sx={{ maxWidth: 280, borderRadius: 2, boxShadow: 4, transition: '0.3s', backgroundColor: '#112240', color: '#ffffff', '&:hover': { boxShadow: 8 } }}>
-              <CardMedia
-                component="img"
-                height="120"
-                image="https://source.unsplash.com/featured/?car"
-                alt={inquiry.VehicleModel}
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold', color: '#90caf9' }}>
-                  {inquiry.VehicleModel}
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#ccd6f6' }}>
-                  <strong>Buyer Name:</strong> {inquiry.Name}<br/>
-                  <strong>Mobile:</strong> {inquiry.Mobile}<br/>
-                  <strong>Email:</strong> {inquiry.email}<br/>
-                </Typography>
-              </CardContent>
-              <CardActions sx={{ justifyContent: 'center', bgcolor: '#233554' }}>
-                <Button variant="contained" sx={{ bgcolor: '#90caf9', color: '#000', '&:hover': { bgcolor: '#64b5f6' } }}>More Details</Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+
+      <Box sx={{ p: 4, backgroundColor: 'white', minHeight: '100vh' }}>
+        <Container>
+        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#0D47A1' }}>
+          Seller Inquiries
+        </Typography>
+        <Grid container spacing={2} justifyContent="center">
+          {inquiries.map((inquiry, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <Card sx={{ maxWidth: 280, borderRadius: 2, boxShadow: 4, transition: '0.3s', backgroundColor: '#FAFAFA', color: '#757575', '&:hover': { boxShadow: 8 } }}>
+                <CardMedia
+                  component="img"
+                  height="120"
+                  image="https://source.unsplash.com/featured/?car"
+                  alt={inquiry.VehicleModel}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h6" component="div" sx={{ fontWeight: 'bold', color: '#1976D2' }}>
+                    {inquiry.VehicleModel}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#757575' }}>
+                    <strong>Buyer Name:</strong> {inquiry.Name}<br/>
+                    <strong>Mobile:</strong> {inquiry.Mobile}<br/>
+                    <strong>Email:</strong> {inquiry.email}<br/>
+                  </Typography>
+                </CardContent>
+                <CardActions sx={{ justifyContent: 'center', bgcolor: '#E0E0E0' }}>
+                  <Button variant="contained" sx={{ bgcolor: '#1976D2', color: '#FFFFFF', '&:hover': { bgcolor: '#1565C0' } }}>More Details</Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+        </Container>
+      </Box>
+    
   );
 }
