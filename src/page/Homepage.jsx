@@ -1,20 +1,19 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, TextField, Container, Grid, Card, CardMedia, CardContent, CardActions, Box } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
 
 function Homepage() {
   const featuredCars = [
-    { id: 1, name: 'Toyota Camry 2021', price: '₹18,50,000', image: 'https://via.placeholder.com/400' },
-    { id: 2, name: 'Honda Civic 2020', price: '₹15,00,000', image: 'https://via.placeholder.com/400' },
-    { id: 3, name: 'Ford Mustang 2019', price: '₹25,00,000', image: 'https://via.placeholder.com/400' },
-    { id: 4, name: 'Maruti Suzuki Swift 2022', price: '₹8,00,000', image: 'https://via.placeholder.com/400' },
-    { id: 5, name: 'Hyundai Creta 2021', price: '₹14,50,000', image: 'https://via.placeholder.com/400' },
-    { id: 6, name: 'Tata Harrier 2023', price: '₹20,00,000', image: 'https://via.placeholder.com/400' },
+    { id: 1, VehicleModel: 'Toyota Camry 2021', price: '₹18,50,000', image: 'https://via.placeholder.com/400' },
+    { id: 2, VehicleModel: 'Honda Civic 2020', price: '₹15,00,000', image: 'https://via.placeholder.com/400' },
+    { id: 3, VehicleModel: 'Ford Mustang 2019', price: '₹25,00,000', image: 'https://via.placeholder.com/400' },
+    { id: 4, VehicleModel: 'Maruti Suzuki Swift 2022', price: '₹8,00,000', image: 'https://via.placeholder.com/400' },
+    { id: 5, VehicleModel: 'Hyundai Creta 2021', price: '₹14,50,000', image: 'https://via.placeholder.com/400' },
+    { id: 6, VehicleModel: 'Tata Harrier 2023', price: '₹20,00,000', image: 'https://via.placeholder.com/400' },
   ];
 
   return (
     <div>
-      {/* Hero Section */}
+     
       <Box
         sx={{
           backgroundImage: 'linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url(/background.jpg)',
@@ -49,10 +48,10 @@ function Homepage() {
                 <CardMedia component="img" image={car.image} alt={car.name} sx={{ height: 250 }} />
                 <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
                   <Typography gutterBottom variant="h5" fontWeight="bold" color="primary">
-                    {car.name}
+                    {car.VehicleModel}
                   </Typography>
                   <Typography variant="h6" color="text.secondary">
-                    {car.price}
+                    Price: {car.price}
                   </Typography>
                 </CardContent>
                 <CardActions sx={{ justifyContent: 'center', pb: 2 }}>
@@ -60,7 +59,7 @@ function Homepage() {
                     View Details
                   </Button>
                   <Button variant="outlined" color="secondary" sx={{ borderRadius: 3, px: 3 }}>
-                    Contact Seller
+                   Inquiry
                   </Button>
                 </CardActions>
               </Card>

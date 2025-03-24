@@ -4,14 +4,14 @@ import { Container, TextField, Select, MenuItem, FormControl, InputLabel, Button
 function SellerRegisterVehicles() {
   const [FormData, setFormData] = useState({
     Brand: "",
-    Model: "",
+    VehicleModel: "",
     Insurance: "",
     CarKmsRun: "",
     Milage: "",
     Vehiclenumber: "",
     RCBookNumber: "",
     Owners: "",
-    QuotedPrice: "",
+    Price: "",
     Fuel: "",
     Vehicletype: "",
     Transmissiontype: ""
@@ -199,9 +199,9 @@ function SellerRegisterVehicles() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField 
-              name="QuotedPrice" 
+              name="Price" 
               fullWidth 
-              label="Quoted Price" 
+              label="Price" 
               variant="outlined" 
               onChange={handleChange} 
               sx={inputStyle}
