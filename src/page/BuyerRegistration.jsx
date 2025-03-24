@@ -26,7 +26,7 @@ function BuyerRegistration() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "black",
+        backgroundColor: "#1a2b45",
       }}
     >
       <form

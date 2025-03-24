@@ -54,22 +54,121 @@ function SellerRegistration() {
 
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField name="Name" fullWidth label="Full Name" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Name"
+              fullWidth
+              label="Full Name"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiInputBase-input": { color: "#ffffff" }, // Text color (entered text)
+                "& .MuiInputLabel-root": { color: "#a3bffa" }, // Label color
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": { borderColor: "#a3bffa" }, // Border color
+                  "&:hover fieldset": { borderColor: "#4c68d7" }, // Hover border color
+                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" }, // Focused border color
+                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 }, // Placeholder color
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="Address" fullWidth label="Address" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Address"
+              fullWidth
+              label="Address"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiInputBase-input": { color: "#ffffff" },
+                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": { borderColor: "#a3bffa" },
+                  "&:hover fieldset": { borderColor: "#4c68d7" },
+                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
+                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="City" fullWidth label="City" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="City"
+              fullWidth
+              label="City"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiInputBase-input": { color: "#ffffff" },
+                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": { borderColor: "#a3bffa" },
+                  "&:hover fieldset": { borderColor: "#4c68d7" },
+                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
+                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="Email" type="email" fullWidth label="Email" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Email"
+              type="email"
+              fullWidth
+              label="Email"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiInputBase-input": { color: "#ffffff" },
+                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": { borderColor: "#a3bffa" },
+                  "&:hover fieldset": { borderColor: "#4c68d7" },
+                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
+                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="Mobile" type="tel" fullWidth label="Mobile Number" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Mobile"
+              type="tel"
+              fullWidth
+              label="Mobile Number"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiInputBase-input": { color: "#ffffff" },
+                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": { borderColor: "#a3bffa" },
+                  "&:hover fieldset": { borderColor: "#4c68d7" },
+                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
+                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="Password" type="password" fullWidth label="Password" variant="outlined" onChange={handleChange} />
+            <TextField
+              name="Password"
+              type="password"
+              fullWidth
+              label="Password"
+              variant="outlined"
+              onChange={handleChange}
+              sx={{
+                "& .MuiInputBase-input": { color: "#ffffff" },
+                "& .MuiInputLabel-root": { color: "#a3bffa" },
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": { borderColor: "#a3bffa" },
+                  "&:hover fieldset": { borderColor: "#4c68d7" },
+                  "&.Mui-focused fieldset": { borderColor: "#4c68d7" },
+                  "& .MuiInputBase-input::placeholder": { color: "#ffffff", opacity: 1 },
+                },
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
             <Button
