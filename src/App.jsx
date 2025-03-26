@@ -12,6 +12,7 @@ import BuyerProfile from './page/BuyerProfile';
 import SellerProfile from './page/SellerProfile';
 import {BrowserRouter,Route,Routes,Link} from 'react-router-dom'; 
 import Navbar from './component/Navbar';
+import CarDetails from './page/CarDetails';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
        <BrowserRouter>
         <Navbar />
           <Routes>
+            <Route path="/CarDetails/" Component={CarDetails}/>         
             <Route path="/Homepage" Component={Homepage}/>
             <Route path="/Buyer/Profile" Component={BuyerProfile}/>
             <Route path="/Seller/Profile" Component={SellerProfile}/>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Container, TextField, Select, MenuItem, FormControl, InputLabel, Button, Grid, Typography } from "@mui/material";
+import { Container, TextField, Select, MenuItem, FormControl, InputLabel, Button, Grid, Typography, IconButton, Box } from "@mui/material";
+import { Delete } from "@mui/icons-material";
 
 function SellerRegisterVehicles() {
   const [FormData, setFormData] = useState({
@@ -14,53 +15,71 @@ function SellerRegisterVehicles() {
     Price: "",
     Fuel: "",
     Vehicletype: "",
-    Transmissiontype: ""
+    Transmissiontype: "",
+    MoreDetails: "",
+    VehicleImages: []
   });
 
   const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "VehicleImages" && files) {
+      const newImages = Array.from(files);
+      setFormData({
+        ...FormData,
+        VehicleImages: [...FormData.VehicleImages, ...newImages]
+      });
+    } else {
+      setFormData({
+        ...FormData,
+        [name]: value
+      });
+    }
+  };
+
+  const removeImage = (indexToRemove) => {
     setFormData({
       ...FormData,
-      [e.target.name]: e.target.value,
+      VehicleImages: FormData.VehicleImages.filter((_, index) => index !== indexToRemove)
     });
   };
 
   const formStyle = {
     width: "100%",
     padding: "40px",
-    background: "#FAFAFA", // Matches Homepage card background
+    background: "#FAFAFA",
     borderRadius: "15px",
     boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.6)",
-    color: "#757575", // Matches Homepage secondary text
-    border: "1px solid #E0E0E0" // Matches Homepage About Us background
+    color: "#757575",
+    border: "1px solid #E0E0E0"
   };
 
   const inputStyle = {
-    input: { color: "#757575" }, // Matches Homepage secondary text
+    input: { color: "#757575" },
     "& .MuiOutlinedInput-root": {
-      "& fieldset": { borderColor: "#1976D2" }, // Matches Homepage primary
-      "&:hover fieldset": { borderColor: "#1565C0" }, // Darker primary on hover
-      "&.Mui-focused fieldset": { borderColor: "#1976D2" } // Matches Homepage primary
+      "& fieldset": { borderColor: "#1976D2" },
+      "&:hover fieldset": { borderColor: "#1565C0" },
+      "&.Mui-focused fieldset": { borderColor: "#1976D2" }
     },
-    "& .MuiInputLabel-root": { color: "#757575" }, // Matches Homepage secondary text
-    "& .MuiInputLabel-root.Mui-focused": { color: "#1976D2" } // Matches Homepage primary
+    "& .MuiInputLabel-root": { color: "#757575" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#1976D2" }
   };
 
   const selectStyle = {
-    color: "#757575", // Matches Homepage secondary text
-    "& .MuiSvgIcon-root": { color: "#1976D2" }, // Matches Homepage primary
-    "&:before": { borderColor: "#1976D2" }, // Matches Homepage primary
-    "&:after": { borderColor: "#1976D2" }, // Matches Homepage primary
-    "&:hover:not(.Mui-disabled):before": { borderColor: "#1565C0" } // Darker primary on hover
+    color: "#757575",
+    "& .MuiSvgIcon-root": { color: "#1976D2" },
+    "&:before": { borderColor: "#1976D2" },
+    "&:after": { borderColor: "#1976D2" },
+    "&:hover:not(.Mui-disabled):before": { borderColor: "#1565C0" }
   };
 
   return (
-    <Container sx={{ mt: 10 }}> {/* Added margin-top to create space below navbar */}
+    <Container sx={{ mt: 10 }}>
       <form style={formStyle}>
         <Typography 
           variant="h4" 
           align="center" 
           sx={{ 
-            color: "#1976D2", // Matches Homepage primary
+            color: "#1976D2",
             marginBottom: "30px",
             fontWeight: "bold",
             letterSpacing: "1px",
@@ -82,7 +101,7 @@ function SellerRegisterVehicles() {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField 
-              name="Model" 
+              name="VehicleModel" 
               fullWidth 
               label="Model" 
               variant="outlined" 
@@ -208,17 +227,88 @@ function SellerRegisterVehicles() {
             />
           </Grid>
           <Grid item xs={12}>
+            <TextField 
+              name="MoreDetails" 
+              fullWidth 
+              label="More Details" 
+              variant="outlined" 
+              multiline 
+              rows={3}
+              onChange={handleChange} 
+              sx={inputStyle}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Box sx={{ mb: 2 }}>
+              <Button
+                variant="outlined"
+                component="label"
+                sx={{
+                  borderColor: "#1976D2",
+                  color: "#1976D2",
+                  "&:hover": { borderColor: "#1565C0", color: "#1565C0" }
+                }}
+              >
+                Upload Vehicle Images
+                <input
+                  type="file"
+                  hidden
+                  name="VehicleImages"
+                  multiple
+                  accept="image/*"
+                  onChange={handleChange}
+                />
+              </Button>
+              <Typography variant="caption" sx={{ ml: 2, color: "#757575" }}>
+                {FormData.VehicleImages.length} image(s) selected
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              {FormData.VehicleImages.map((image, index) => (
+                <Grid item xs={6} sm={4} md={3} key={index}>
+                  <div style={{ position: "relative" }}>
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt={`Vehicle Preview ${index + 1}`}
+                      style={{ 
+                        width: "100%", 
+                        height: "150px", 
+                        objectFit: "cover",
+                        borderRadius: "4px"
+                      }}
+                    />
+                    <IconButton
+                      onClick={() => removeImage(index)}
+                      size="small"
+                      sx={{
+                        position: "absolute",
+                        top: 5,
+                        right: 5,
+                        backgroundColor: "rgba(255, 255, 255, 0.7)",
+                        "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.9)" }
+                      }}
+                    >
+                      <Delete color="error" />
+                    </IconButton>
+                  </div>
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
             <Button 
               fullWidth 
               variant="contained" 
               sx={{ 
-                bgcolor: "#1976D2", // Matches Homepage primary
-                color: "#FFFFFF", // Matches Homepage button text
+                bgcolor: "#1976D2",
+                color: "#FFFFFF",
                 padding: "12px",
                 fontWeight: "bold",
                 letterSpacing: "1px",
                 '&:hover': { 
-                  bgcolor: "#1565C0", // Darker primary on hover
+                  bgcolor: "#1565C0",
                   transform: "translateY(-2px)",
                   transition: "all 0.3s ease"
                 }
