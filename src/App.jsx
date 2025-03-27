@@ -10,6 +10,7 @@ import BuyerPastinquiries from './page/BuyerPastinquiries';
 import Homepage from './page/Homepage';
 import BuyerProfile from './page/BuyerProfile';
 import SellerProfile from './page/SellerProfile';
+import SellerCars from './page/SellerCars';
 import {BrowserRouter,Route,Routes,Link} from 'react-router-dom'; 
 import Navbar from './component/Navbar';
 import CarDetails from './page/CarDetails';
@@ -20,6 +21,7 @@ function App() {
        <BrowserRouter>
         <Navbar />
           <Routes>
+          <Route path="/Seller/Cars" Component={SellerCars}/>
             <Route path="/CarDetails/" Component={CarDetails}/>         
             <Route path="/Homepage" Component={Homepage}/>
             <Route path="/Buyer/Profile" Component={BuyerProfile}/>
