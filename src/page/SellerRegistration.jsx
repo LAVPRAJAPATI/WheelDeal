@@ -5,7 +5,6 @@
 //   const [formData, setFormData] = useState({
 //     Name: "",
 //     Address: "",
-//     City: "",
 //     Email: "",
 //     Mobile: "",
 //     Password: "",
@@ -77,25 +76,6 @@
 //               name="Address"
 //               fullWidth
 //               label="Address"
-//               variant="outlined"
-//               onChange={handleChange}
-//               sx={{
-//                 "& .MuiInputBase-input": { color: "#757575" },
-//                 "& .MuiInputLabel-root": { color: "#757575" },
-//                 "& .MuiOutlinedInput-root": {
-//                   "& fieldset": { borderColor: "#1976D2" },
-//                   "&:hover fieldset": { borderColor: "#1565C0" },
-//                   "&.Mui-focused fieldset": { borderColor: "#1976D2" },
-//                   "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
-//                 },
-//               }}
-//             />
-//           </Grid>
-//           <Grid item xs={12}>
-//             <TextField
-//               name="City"
-//               fullWidth
-//               label="City"
 //               variant="outlined"
 //               onChange={handleChange}
 //               sx={{
@@ -196,23 +176,22 @@
 // export default SellerRegistration;
 
 
+
 import React, { useState } from "react";
 import { Container, TextField, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../config/firebase"; // Adjust path to your firebase.js
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { db } from "../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
 
 function SellerRegistration() {
   const [formData, setFormData] = useState({
     Name: "",
     Address: "",
-    City: "",
     Email: "",
     Mobile: "",
     Password: "",
   });
-  const [error, setError] = useState(""); // Added for error feedback
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -222,33 +201,15 @@ function SellerRegistration() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent form submission refresh
+  const handleRegister = async () => {
     try {
-      // Create user with email and password
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.Email,
-        formData.Password
-      );
-      const user = userCredential.user;
-
-      // Store additional seller details in Firestore
-      await addDoc(collection(db, "sellers"), {
-        uid: user.uid,
-        name: formData.Name,
-        address: formData.Address,
-        city: formData.City,
-        email: formData.Email,
-        mobile: formData.Mobile,
-        createdAt: new Date().toISOString(),
-      });
-
-      console.log("Seller registered successfully!");
-      navigate("/Seller/Login"); // Redirect to seller login page
+      const docRef = await addDoc(collection(db, "seller_registration"), formData);
+      alert("Registration successful!");
+      setFormData({ Name: "", Address: "", Email: "", Mobile: "", Password: "" });
+      navigate("/Seller/Login");
     } catch (error) {
-      console.error("Registration failed:", error.message);
-      setError(error.message); // Display error to user
+      console.error("Error adding document: ", error);
+      alert("Registration failed! Try again.");
     }
   };
 
@@ -272,7 +233,6 @@ function SellerRegistration() {
           borderRadius: "12px",
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
         }}
-        onSubmit={handleSubmit} // Added form submission handler
       >
         <Typography
           variant="h4"
@@ -287,12 +247,6 @@ function SellerRegistration() {
           Seller Registration
         </Typography>
 
-        {error && (
-          <Typography color="error" style={{ textAlign: "center", marginBottom: "10px" }}>
-            {error}
-          </Typography>
-        )}
-
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
@@ -300,17 +254,8 @@ function SellerRegistration() {
               fullWidth
               label="Full Name"
               variant="outlined"
+              value={formData.Name}
               onChange={handleChange}
-              sx={{
-                "& .MuiInputBase-input": { color: "#757575" },
-                "& .MuiInputLabel-root": { color: "#757575" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#1976D2" },
-                  "&:hover fieldset": { borderColor: "#1565C0" },
-                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
-                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
-                },
-              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -319,36 +264,8 @@ function SellerRegistration() {
               fullWidth
               label="Address"
               variant="outlined"
+              value={formData.Address}
               onChange={handleChange}
-              sx={{
-                "& .MuiInputBase-input": { color: "#757575" },
-                "& .MuiInputLabel-root": { color: "#757575" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#1976D2" },
-                  "&:hover fieldset": { borderColor: "#1565C0" },
-                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
-                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
-                },
-              }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              name="City"
-              fullWidth
-              label="City"
-              variant="outlined"
-              onChange={handleChange}
-              sx={{
-                "& .MuiInputBase-input": { color: "#757575" },
-                "& .MuiInputLabel-root": { color: "#757575" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#1976D2" },
-                  "&:hover fieldset": { borderColor: "#1565C0" },
-                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
-                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
-                },
-              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -358,17 +275,8 @@ function SellerRegistration() {
               fullWidth
               label="Email"
               variant="outlined"
+              value={formData.Email}
               onChange={handleChange}
-              sx={{
-                "& .MuiInputBase-input": { color: "#757575" },
-                "& .MuiInputLabel-root": { color: "#757575" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#1976D2" },
-                  "&:hover fieldset": { borderColor: "#1565C0" },
-                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
-                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
-                },
-              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -378,17 +286,8 @@ function SellerRegistration() {
               fullWidth
               label="Mobile Number"
               variant="outlined"
+              value={formData.Mobile}
               onChange={handleChange}
-              sx={{
-                "& .MuiInputBase-input": { color: "#757575" },
-                "& .MuiInputLabel-root": { color: "#757575" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#1976D2" },
-                  "&:hover fieldset": { borderColor: "#1565C0" },
-                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
-                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
-                },
-              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -398,17 +297,8 @@ function SellerRegistration() {
               fullWidth
               label="Password"
               variant="outlined"
+              value={formData.Password}
               onChange={handleChange}
-              sx={{
-                "& .MuiInputBase-input": { color: "#757575" },
-                "& .MuiInputLabel-root": { color: "#757575" },
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": { borderColor: "#1976D2" },
-                  "&:hover fieldset": { borderColor: "#1565C0" },
-                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
-                  "& .MuiInputBase-input::placeholder": { color: "#757575", opacity: 1 },
-                },
-              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -416,14 +306,8 @@ function SellerRegistration() {
               fullWidth
               variant="contained"
               color="primary"
-              style={{
-                padding: "12px",
-                fontSize: "16px",
-                borderRadius: "5px",
-                backgroundColor: "#1976D2",
-                color: "#FFFFFF",
-              }}
-              type="submit" // Changed from onClick to form submission
+              style={{ padding: "12px", fontSize: "16px", borderRadius: "5px" }}
+              onClick={handleRegister}
             >
               Register
             </Button>

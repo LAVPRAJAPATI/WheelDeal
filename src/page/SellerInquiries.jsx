@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { db, auth } from "../config/firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -9,8 +11,6 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { 
   Box, 
-  AppBar, 
-  Toolbar, 
   Container,
   Dialog,
   DialogTitle,
@@ -18,42 +18,31 @@ import {
   DialogActions,
   Avatar
 } from '@mui/material';
-const inquiries = [
-  {
-    id: 1,
-    VehicleModel: "Civic",
-    price: "28,00,000",
-    buyer: { name: 'Amit Sharma', email: 'amit@example.com', phone: '+91 98765 43210', location: 'Mumbai' }
-  },
-  {
-    id: 2,
-    VehicleModel: "i20",
-    price: "8,00,000",
-    buyer: { name: 'Priya Patel', email: 'priya@example.com', phone: '+91 87654 32109', location: 'Ahmedabad' }
-  },
-  {
-    id: 3,
-    VehicleModel: "Glanza",
-    price: "9,00,000",
-    buyer: { name: 'Rahul Kumar', email: 'rahul@example.com', phone: '+91 76543 21098', location: 'Delhi' }
-  },
-  {
-    id: 4,
-    VehicleModel: "Brezza",
-    price: "6,00,000",
-    buyer: { name: 'Sneha Gupta', email: 'sneha@example.com', phone: '+91 65432 10987', location: 'Bangalore' }
-  },
-  {
-    id: 5,
-    VehicleModel: "Thar",
-    price: "12,00,000",
-    buyer: { name: 'Vikram Singh', email: 'vikram@example.com', phone: '+91 54321 09876', location: 'Jaipur' }
-  },
-];
 
 export default function SellerInquiries() {
+  const [inquiries, setInquiries] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState(null);
+
+  useEffect(() => {
+    const fetchInquiries = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const q = query(collection(db, "seller_inquiry"), where("sellerId", "==", user.uid));
+        const querySnapshot = await getDocs(q);
+        const inquiriesData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setInquiries(inquiriesData);
+      } catch (error) {
+        console.error("Error fetching inquiries:", error);
+      }
+    };
+    fetchInquiries();
+  }, []);
 
   const handleContactBuyer = (inquiry) => {
     setSelectedInquiry(inquiry);
@@ -78,17 +67,15 @@ export default function SellerInquiries() {
                 <CardMedia
                   component="img"
                   height="250"
-                  image="https://source.unsplash.com/featured/?car"
+                  image={inquiry.image || "/images/default-car.jpg"}  
                   alt={inquiry.VehicleModel}
+                  onError={(e) => e.target.src = "/images/default-car.jpg"}
                 />
                 <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
                   <Typography gutterBottom variant="h5" fontWeight="bold" color="primary">
                     {inquiry.VehicleModel}
                   </Typography>
-                  <Typography 
-                    variant="h6" 
-                    color="text.secondary"
-                  >
+                  <Typography variant="h6" color="text.secondary">
                     Price: {inquiry.price}
                   </Typography>
                 </CardContent>
@@ -117,19 +104,19 @@ export default function SellerInquiries() {
           {selectedInquiry && (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <Avatar sx={{ width: 80, height: 80, mb: 2, bgcolor: '#1976D2' }}>
-                {selectedInquiry.buyer.name[0]}
+                {selectedInquiry.buyer?.name?.[0]}
               </Avatar>
               <Typography variant="h6" gutterBottom>
-                {selectedInquiry.buyer.name}
+                {selectedInquiry.buyer?.name}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                <strong>Email:</strong> {selectedInquiry.buyer.email}
+                <strong>Email:</strong> {selectedInquiry.buyer?.email}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                <strong>Phone:</strong> {selectedInquiry.buyer.phone}
+                <strong>Phone:</strong> {selectedInquiry.buyer?.phone}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                <strong>Location:</strong> {selectedInquiry.buyer.location}
+                <strong>Location:</strong> {selectedInquiry.buyer?.location}
               </Typography>
             </Box>
           )}
@@ -148,3 +135,4 @@ export default function SellerInquiries() {
     </Box>
   );
 }
+ 
