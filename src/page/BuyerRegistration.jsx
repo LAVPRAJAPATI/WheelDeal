@@ -182,6 +182,8 @@ import { Container, TextField, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { db } from "../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
+
 
 function BuyerRegistration() {
   const [formData, setFormData] = useState({
@@ -202,8 +204,23 @@ function BuyerRegistration() {
   };
 
   const handleRegister = async () => {
+    const { Name, Address, Email, Mobile, Password } = formData;
+  
+    // Check for empty fields
+    if (!Name || !Address || !Email || !Mobile || !Password) {
+      alert("Please fill in all the fields before registering.");
+      return;
+    }
+  
     try {
-      const docRef = await addDoc(collection(db, "buyer_registration"), formData);
+      const buyerRef = doc(collection(db, "buyer_registration"));
+      const buyerId = buyerRef.id;
+  
+      await setDoc(buyerRef, {
+        ...formData,
+        buyerId: buyerId,
+      });
+  
       alert("Registration successful!");
       setFormData({ Name: "", Address: "", Email: "", Mobile: "", Password: "" });
       navigate("/Buyer/Login");
@@ -212,6 +229,7 @@ function BuyerRegistration() {
       alert("Registration failed! Try again.");
     }
   };
+  
 
   return (
     <Container

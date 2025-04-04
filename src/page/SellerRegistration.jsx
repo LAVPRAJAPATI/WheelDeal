@@ -182,6 +182,7 @@ import { Container, TextField, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { db } from "../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import {  doc, setDoc } from "firebase/firestore";
 
 function SellerRegistration() {
   const [formData, setFormData] = useState({
@@ -191,7 +192,7 @@ function SellerRegistration() {
     Mobile: "",
     Password: "",
   });
-
+ 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -202,8 +203,23 @@ function SellerRegistration() {
   };
 
   const handleRegister = async () => {
+    const { Name, Address, Email, Mobile, Password } = formData;
+  
+    // Check for empty fields
+    if (!Name || !Address || !Email || !Mobile || !Password) {
+      alert("Please fill in all the fields before registering.");
+      return;
+    }
+  
     try {
-      const docRef = await addDoc(collection(db, "seller_registration"), formData);
+      const sellerRef = doc(collection(db, "seller_registration"));
+      const sellerId = sellerRef.id;
+  
+      await setDoc(sellerRef, {
+        ...formData,
+        sellerId: sellerId, // explicitly store the unique ID
+      });
+  
       alert("Registration successful!");
       setFormData({ Name: "", Address: "", Email: "", Mobile: "", Password: "" });
       navigate("/Seller/Login");
@@ -212,6 +228,7 @@ function SellerRegistration() {
       alert("Registration failed! Try again.");
     }
   };
+  
 
   return (
     <Container

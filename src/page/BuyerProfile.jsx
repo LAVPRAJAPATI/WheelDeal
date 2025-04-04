@@ -115,6 +115,8 @@ import React, { useState, useEffect } from "react";
 import { TextField, Button, Container, Typography, Box, Paper } from "@mui/material";
 import { db } from "../config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
+
 
 export default function BuyerProfile() {
   const [userData, setUserData] = useState(null);
@@ -123,14 +125,14 @@ export default function BuyerProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Replace 'userEmail' with the currently logged-in user's email
-        const userEmail = "johndoe@example.com"; // You should dynamically get this from authentication
+        const userEmail = "johndoe@example.com"; // Replace with auth user email
         const q = query(collection(db, "buyer_registration"), where("Email", "==", userEmail));
         const querySnapshot = await getDocs(q);
-        
+    
         if (!querySnapshot.empty) {
-          const userData = querySnapshot.docs[0].data();
-          setUserData(userData);
+          const doc = querySnapshot.docs[0];
+          const userData = doc.data();
+          setUserData({ ...userData, docId: doc.id }); // include doc ID
         } else {
           console.log("No user found");
         }
@@ -138,8 +140,7 @@ export default function BuyerProfile() {
         console.error("Error fetching user data:", error);
       }
     };
-
-    fetchUserData();
+        fetchUserData();
   }, []);
 
   const handleChange = (e) => {
@@ -150,11 +151,21 @@ export default function BuyerProfile() {
     setIsEditing(true);
   };
 
-  const handleUpdate = () => {
-    setIsEditing(false);
-    alert("Profile updated successfully!");
+  const handleUpdate = async () => {
+    try {
+      const docRef = doc(db, "buyer_registration", userData.docId); // Use doc ID
+      const { Name, Address, Mobile } = userData;
+  
+      await updateDoc(docRef, { Name, Address, Mobile });
+  
+      setIsEditing(false);
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Failed to update profile. Try again.");
+    }
   };
-
+  
   if (!userData) {
     return <Typography>Loading profile...</Typography>;
   }

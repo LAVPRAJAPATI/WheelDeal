@@ -10,7 +10,7 @@ import {
   Avatar,
   Button,
   Tooltip,
-  MenuItem,List,Divider,ListItem,ListItemButton,ListItemIcon,ListItemText,Drawer
+  MenuItem,List,ListItem,ListItemButton,ListItemIcon,ListItemText,Drawer
 } from "@mui/material";
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
@@ -32,7 +32,7 @@ const buyerMenu = [
 ]
 
 function Navbar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+ 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [open, setOpen] = React.useState(false);
   let navigate = useNavigate()
@@ -45,6 +45,21 @@ function Navbar() {
     
       <List>
         {sellerMenu.map((text, index) => (
+          <ListItem key={text} disablePadding onClick={()=>{
+            navigate(text.path)
+          }}>
+            <ListItemButton>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text.name} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+
+      <List>
+        {buyerMenu.map((text, index) => (
           <ListItem key={text} disablePadding onClick={()=>{
             navigate(text.path)
           }}>
