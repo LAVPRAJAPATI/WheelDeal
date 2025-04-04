@@ -3,7 +3,7 @@ import { Container, TextField, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { db, auth } from "../config/firebase";
 import { doc, setDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 
 function SellerRegistration() {
   const [formData, setFormData] = useState({
@@ -50,15 +50,10 @@ function SellerRegistration() {
         Mobile,
       });
 
-      alert("Registration successful!");
-      setFormData({
-        Name: "",
-        Address: "",
-        Email: "",
-        Mobile: "",
-        Password: "",
-      });
+      // Step 3: Sign out the user after registration
+      await signOut(auth);
 
+      alert("Registration successful! Please login.");
       navigate("/Seller/Login");
     } catch (error) {
       console.error("Registration error:", error);

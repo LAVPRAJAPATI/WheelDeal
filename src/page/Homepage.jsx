@@ -217,15 +217,25 @@ import {
   DialogActions,
   Avatar,
   Paper,
+  Divider,
 } from "@mui/material";
-import { db } from "../config/firebase"; // Import Firestore
-import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 
 function Homepage() {
   const navigate = useNavigate();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
   const [featuredCars, setFeaturedCars] = useState([]);
+  const [sellerDetails, setSellerDetails] = useState(null);
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -235,7 +245,7 @@ function Homepage() {
           id: doc.id,
           ...doc.data(),
         }));
-        setFeaturedCars(carsData.slice(0, 6)); // Limit to 6 cars
+        setFeaturedCars(carsData.slice(0, 6));
       } catch (error) {
         console.error("Error fetching cars:", error);
       }
@@ -249,39 +259,62 @@ function Homepage() {
   };
 
   const handleInquiry = async (car) => {
+    const buyerEmail = localStorage.getItem("userEmail");
+
+    if (!buyerEmail) {
+      alert("Please log in as a buyer to make an inquiry.");
+      navigate("/Buyer/Login");
+      return;
+    }
+
     try {
       const buyerPastInquiriesRef = collection(db, "buyer_pastinquiry");
       const sellerInquiriesRef = collection(db, "seller_inquiry");
 
-      // Check if the inquiry already exists
       const existingInquiryQuery = query(
         buyerPastInquiriesRef,
-        where("carId", "==", car.id)
+        where("carId", "==", car.id),
+        where("buyerEmail", "==", buyerEmail)
       );
       const existingInquirySnapshot = await getDocs(existingInquiryQuery);
 
+      let sellerData = null;
+
+      if (car.sellerId) {
+        const sellerDocRef = doc(db, "seller_registration", car.sellerId);
+        const sellerDocSnap = await getDoc(sellerDocRef);
+        if (sellerDocSnap.exists()) {
+          const sellerDocData = sellerDocSnap.data();
+          sellerData = {
+            Name: sellerDocData.Name || "N/A",
+            Email: sellerDocData.Email || "N/A",
+            Number: sellerDocData.Number || "N/A",
+          };
+        }
+      }
+
+      setSellerDetails(sellerData);
+      setSelectedCar(car);
+      setOpenDialog(true);
+
       if (!existingInquirySnapshot.empty) {
-        setSelectedCar(car);
-        setOpenDialog(true);
         return;
       }
 
-      // Create inquiry data
       const inquiryData = {
         carId: car.id,
-        sellerId: car.seller?.id || "Unknown",
-        sellerEmail: car.seller?.email || "N/A",
         carModel: car.VehicleModel,
         price: car.Price,
         timestamp: new Date(),
+        sellerEmail: sellerData?.Email || "N/A",
+        sellerId: car.sellerId || "Unknown",
+        sellerName: sellerData?.Name || "N/A",
+        sellerPhone: sellerData?.Number || "N/A",
+        buyerEmail: buyerEmail,
       };
 
-      // Add to both collections
       await addDoc(buyerPastInquiriesRef, inquiryData);
       await addDoc(sellerInquiriesRef, inquiryData);
-
-      setSelectedCar(car);
-      setOpenDialog(true);
     } catch (error) {
       console.error("Error submitting inquiry:", error);
     }
@@ -290,10 +323,12 @@ function Homepage() {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedCar(null);
+    setSellerDetails(null);
   };
 
   return (
     <div>
+      {/* Hero Banner */}
       <Box
         sx={{
           backgroundImage:
@@ -308,12 +343,7 @@ function Homepage() {
         }}
       >
         <Container maxWidth="md">
-          <Typography
-            variant="h2"
-            gutterBottom
-            fontWeight="bold"
-            sx={{ textShadow: "3px 3px 6px rgba(0,0,0,0.6)" }}
-          >
+          <Typography variant="h2" fontWeight="bold" gutterBottom>
             Welcome to WheelDeal
           </Typography>
           <Typography variant="h5" paragraph>
@@ -322,9 +352,9 @@ function Homepage() {
         </Container>
       </Box>
 
-      {/* Featured Cars Section */}
+      {/* Featured Cars */}
       <Container sx={{ py: 10 }} maxWidth="lg">
-        <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
+        <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
           Featured Cars
         </Typography>
         <Grid container spacing={4} justifyContent="center">
@@ -348,13 +378,8 @@ function Homepage() {
                     alt={car.VehicleModel}
                     sx={{ height: 250 }}
                   />
-                  <CardContent sx={{ flexGrow: 1, textAlign: "center" }}>
-                    <Typography
-                      gutterBottom
-                      variant="h5"
-                      fontWeight="bold"
-                      color="primary"
-                    >
+                  <CardContent sx={{ textAlign: "center" }}>
+                    <Typography variant="h5" fontWeight="bold" color="primary">
                       {car.VehicleModel}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
@@ -390,32 +415,81 @@ function Homepage() {
         </Grid>
       </Container>
 
-      {/* About Us Section */}
-      <Box sx={{ bgcolor: "grey.200", py: 8, textAlign: "center" }}>
+      {/* Seller Details Dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        PaperComponent={Paper}
+      >
+        <DialogTitle
+          sx={{
+            backgroundColor: "#1976d2",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          Seller Details
+        </DialogTitle>
+        <DialogContent dividers>
+          {sellerDetails ? (
+            <Box textAlign="center" p={2}>
+              <Avatar
+                sx={{
+                  bgcolor: "#1976d2",
+                  width: 56,
+                  height: 56,
+                  margin: "0 auto",
+                }}
+              >
+                {sellerDetails.Name?.charAt(0) || "S"}
+              </Avatar>
+              <Typography mt={2} variant="h6" fontWeight="bold">
+                {sellerDetails.Name || "N/A"}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {sellerDetails.Email || "N/A"}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {sellerDetails.Number || "N/A"}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography>Loading seller details...</Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseDialog}
+            color="primary"
+            variant="contained"
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* About Us and Footer */}
+      <Box sx={{ backgroundColor: "#f5f5f5", py: 6 }}>
         <Container maxWidth="md">
           <Typography
-            variant="h4"
-            align="center"
-            gutterBottom
+            variant="h5"
             fontWeight="bold"
-            color="primary"
+            gutterBottom
+            align="center"
           >
             About Us
           </Typography>
-          <Typography
-            variant="body1"
-            align="center"
-            color="text.secondary"
-            paragraph
-          >
-            WheelDeal is a trusted platform dedicated to helping buyers and
-            sellers connect seamlessly in the car marketplace. Our mission is to
-            make car trading easy, transparent, and hassle-free.
+          <Typography variant="body1" align="center" color="text.secondary">
+            WheelDeal is a car listing platform designed to connect buyers and
+            sellers seamlessly. We provide a transparent and easy-to-use
+            interface where users can browse, list, and inquire about vehicles.
+            Our goal is to simplify your car buying or selling experience by
+            offering verified listings and clear seller details — all in one
+            place.
           </Typography>
         </Container>
       </Box>
 
-      {/* Footer */}
       <Box
         sx={{
           bgcolor: "primary.dark",
@@ -435,57 +509,6 @@ function Homepage() {
           © {new Date().getFullYear()} WheelDeal. All rights reserved.
         </Typography>
       </Box>
-
-      {/* Enhanced Dialog Box for Seller Details */}
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        PaperComponent={Paper}
-      >
-        <DialogTitle
-          sx={{
-            backgroundColor: "#1976d2",
-            color: "white",
-            textAlign: "center",
-          }}
-        >
-          Seller Details
-        </DialogTitle>
-        <DialogContent dividers>
-          {selectedCar && (
-            <Box textAlign="center" p={2}>
-              <Avatar
-                sx={{
-                  bgcolor: "#1976d2",
-                  width: 56,
-                  height: 56,
-                  margin: "0 auto",
-                }}
-              >
-                {selectedCar.seller?.Name?.charAt(0) || "S"}
-              </Avatar>
-              <Typography mt={2} variant="h6" fontWeight="bold">
-                {selectedCar.seller?.Name || "N/A"}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                {selectedCar.seller?.email || "N/A"}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                {selectedCar.seller?.Number || "N/A"}
-              </Typography>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleCloseDialog}
-            color="primary"
-            variant="contained"
-          >
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 }

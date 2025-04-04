@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { auth } from "../config/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom"; // <-- Add this line
+import { useNavigate } from "react-router-dom";
 
 function BuyerLogin() {
   const [formData, setFormData] = useState({
@@ -19,8 +19,7 @@ function BuyerLogin() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const navigate = useNavigate(); // <-- Initialize navigation hook
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -41,8 +40,15 @@ function BuyerLogin() {
         formData.Password
       );
 
-      console.log("Login successful:", userCredential.user);
+      const user = userCredential.user;
+      const token = await user.getIdToken();
 
+      // ✅ Store required info in localStorage
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userRole", "buyer");
+      localStorage.setItem("userEmail", user.email); // <-- Required for BuyerCars
+
+      console.log("Login successful:", user);
       navigate("/Buyer/Cars");
     } catch (err) {
       console.error("Login error:", err);

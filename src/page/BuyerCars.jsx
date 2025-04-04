@@ -420,27 +420,35 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  TextField, 
-  Card, 
-  CardContent, 
-  Typography, 
-  Container, 
-  Grid, 
-  CardMedia, 
-  Box, 
-  Button, 
+import {
+  TextField,
+  Card,
+  CardContent,
+  Typography,
+  Container,
+  Grid,
+  CardMedia,
+  Box,
+  Button,
   CardActions,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Avatar,
-  Paper
+  Paper,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { db } from "../config/firebase";
-import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 
 function BuyerCars() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -448,13 +456,12 @@ function BuyerCars() {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
   const [cars, setCars] = useState([]);
-  const [userEmail] = useState("buyer@example.com"); // Replace with logged-in user's email
 
   useEffect(() => {
     const fetchCars = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "RegisterVehicle"));
-        const vehiclesData = querySnapshot.docs.map(doc => ({
+        const vehiclesData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
@@ -467,7 +474,7 @@ function BuyerCars() {
     fetchCars();
   }, []);
 
-  const filteredCars = cars.filter(car =>
+  const filteredCars = cars.filter((car) =>
     car.VehicleModel?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -477,37 +484,80 @@ function BuyerCars() {
 
   const handleInquiry = async (car) => {
     try {
-      const buyerPastInquiriesRef = collection(db, "buyer_pastinquiry");
-      const sellerInquiriesRef = collection(db, "seller_inquiry");
+      const buyerEmail = localStorage.getItem("userEmail");
+      if (!buyerEmail) {
+        alert("Please log in to send an inquiry.");
+        return;
+      }
 
+      // 🔹 Fetch buyer info using email
+      const buyerQuery = query(
+        collection(db, "buyer_registration"),
+        where("Email", "==", buyerEmail)
+      );
+      const buyerSnapshot = await getDocs(buyerQuery);
+      if (buyerSnapshot.empty) {
+        alert("Buyer not found.");
+        return;
+      }
+      const buyerData = buyerSnapshot.docs[0].data();
+      const buyerId = buyerData.buyerId;
+
+      // 🔹 Fetch seller info using sellerId from car
+      const sellerId = car.sellerId;
+      const sellerRef = doc(db, "seller_registration", sellerId);
+      const sellerSnap = await getDoc(sellerRef);
+
+      if (!sellerSnap.exists()) {
+        alert("Seller not found.");
+        return;
+      }
+      const sellerData = sellerSnap.data();
+
+      // 🔹 Check for duplicate inquiry
       const existingInquiryQuery = query(
-        buyerPastInquiriesRef,
-        where("carId", "==", car.id)
+        collection(db, "buyer_pastinquiry"),
+        where("carId", "==", car.id),
+        where("buyerId", "==", buyerId)
       );
       const existingInquirySnapshot = await getDocs(existingInquiryQuery);
-
       if (!existingInquirySnapshot.empty) {
-        setSelectedCar(car);
+        setSelectedCar({
+          ...car,
+          sellerName: sellerData.Name,
+          sellerPhone: sellerData.Mobile,
+          sellerEmail: sellerData.Email,
+        });
         setOpenDialog(true);
         return;
       }
 
+      // 🔹 Prepare inquiry data
       const inquiryData = {
         carId: car.id,
-        sellerId: car.seller?.id || "Unknown",
-        sellerEmail: car.seller?.email || "N/A",
         carModel: car.VehicleModel,
         price: car.Price,
-        timestamp: new Date()
+        sellerId: sellerId,
+        sellerEmail: sellerData.Email,
+        buyerId,
+        buyerEmail,
+        timestamp: new Date(),
       };
 
-      await addDoc(buyerPastInquiriesRef, inquiryData);
-      await addDoc(sellerInquiriesRef, inquiryData);
+      // 🔹 Save to both collections
+      await addDoc(collection(db, "buyer_pastinquiry"), inquiryData);
+      await addDoc(collection(db, "seller_inquiry"), inquiryData);
 
-      setSelectedCar(car);
+      setSelectedCar({
+        ...car,
+        sellerName: sellerData.Name,
+        sellerPhone: sellerData.Mobile,
+        sellerEmail: sellerData.Email,
+      });
       setOpenDialog(true);
     } catch (error) {
       console.error("Error submitting inquiry:", error);
+      alert("Failed to send inquiry.");
     }
   };
 
@@ -517,35 +567,58 @@ function BuyerCars() {
   };
 
   return (
-    <div sx={{ bgcolor: 'white', minHeight: '100vh', py: 4 }}>
+    <div sx={{ bgcolor: "white", minHeight: "100vh", py: 4 }}>
       <Box mb={4}>
-        <Typography variant="h3" align="center" sx={{ fontWeight: 'bold', color:"#007bb2", textShadow: '2px 2px 4px rgba(0,0,0,0.3)', letterSpacing: '1px' }}>
+        <Typography
+          variant="h3"
+          align="center"
+          sx={{
+            fontWeight: "bold",
+            color: "#007bb2",
+            textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+            letterSpacing: "1px",
+          }}
+        >
           Discover Your Perfect Ride
         </Typography>
-        <Typography variant="h6" align="center" sx={{ color:"#007bb2", mt: 1, fontStyle: 'italic', opacity: 0.9 }}>
+        <Typography
+          variant="h6"
+          align="center"
+          sx={{
+            color: "#007bb2",
+            mt: 1,
+            fontStyle: "italic",
+            opacity: 0.9,
+          }}
+        >
           Find your dream car today!
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 4 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 4 }}>
         <TextField
           variant="outlined"
           placeholder="Search for cars..."
-          sx={{ 
-            width: '400px', 
-            mr: 2, 
-            bgcolor: '#FFFFFF',
+          sx={{
+            width: "400px",
+            mr: 2,
+            bgcolor: "#FFFFFF",
             borderRadius: 3,
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#1976D2' },
-              '&:hover fieldset': { borderColor: '#1565C0' },
-              '&.Mui-focused fieldset': { borderColor: '#1976D2' },
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": { borderColor: "#1976D2" },
+              "&:hover fieldset": { borderColor: "#1565C0" },
+              "&.Mui-focused fieldset": { borderColor: "#1976D2" },
             },
-            '& .MuiInputBase-input': { color: '#757575' },
+            "& .MuiInputBase-input": { color: "#757575" },
           }}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Button variant="contained" color="primary" startIcon={<SearchIcon />} sx={{ borderRadius: 3, px: 4, fontSize: '1rem' }}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<SearchIcon />}
+          sx={{ borderRadius: 3, px: 4, fontSize: "1rem" }}
+        >
           Search
         </Button>
       </Box>
@@ -553,23 +626,53 @@ function BuyerCars() {
       <Container maxWidth="lg">
         <Grid container spacing={4} mt={3} pb={6}>
           {filteredCars.length > 0 ? (
-            filteredCars.map(car => (
+            filteredCars.map((car) => (
               <Grid item xs={12} sm={6} md={4} key={car.id}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 6, borderRadius: 3, transition: '0.3s', '&:hover': { transform: 'scale(1.05)' } }}>
-                  <CardMedia component="img" height="250" image={car.image || "/images/default-car.jpg"} alt={car.VehicleModel} />
-                  <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
-                    <Typography gutterBottom variant="h5" fontWeight="bold" color="primary">
+                <Card
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    boxShadow: 6,
+                    borderRadius: 3,
+                    transition: "0.3s",
+                    "&:hover": { transform: "scale(1.05)" },
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="250"
+                    image={car.image || "/images/default-car.jpg"}
+                    alt={car.VehicleModel}
+                  />
+                  <CardContent sx={{ flexGrow: 1, textAlign: "center" }}>
+                    <Typography
+                      gutterBottom
+                      variant="h5"
+                      fontWeight="bold"
+                      color="primary"
+                    >
                       {car.VehicleModel}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
                       Price: {car.Price}
                     </Typography>
                   </CardContent>
-                  <CardActions sx={{ justifyContent: 'center', pb: 2 }}>
-                    <Button variant="contained" color="primary" sx={{ borderRadius: 3, px: 3 }} onClick={() => handleViewDetails(car)}>
+                  <CardActions sx={{ justifyContent: "center", pb: 2 }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={{ borderRadius: 3, px: 3 }}
+                      onClick={() => handleViewDetails(car)}
+                    >
                       More Details
                     </Button>
-                    <Button variant="outlined" color="secondary" sx={{ borderRadius: 3, px: 3 }} onClick={() => handleInquiry(car)}>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      sx={{ borderRadius: 3, px: 3 }}
+                      onClick={() => handleInquiry(car)}
+                    >
                       Inquiry
                     </Button>
                   </CardActions>
@@ -577,7 +680,11 @@ function BuyerCars() {
               </Grid>
             ))
           ) : (
-            <Typography variant="h6" align="center" sx={{ mt: 4, width: "100%" }}>
+            <Typography
+              variant="h6"
+              align="center"
+              sx={{ mt: 4, width: "100%" }}
+            >
               No vehicles available at the moment.
             </Typography>
           )}
@@ -585,19 +692,44 @@ function BuyerCars() {
       </Container>
 
       <Dialog open={openDialog} onClose={handleCloseDialog} PaperComponent={Paper}>
-        <DialogTitle sx={{ backgroundColor: '#1976d2', color: 'white', textAlign: 'center' }}>Seller Details</DialogTitle>
+        <DialogTitle
+          sx={{
+            backgroundColor: "#1976d2",
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          Seller Details
+        </DialogTitle>
         <DialogContent dividers>
           {selectedCar && (
             <Box textAlign="center" p={2}>
-              <Avatar sx={{ bgcolor: '#1976d2', width: 56, height: 56, margin: '0 auto' }}>{selectedCar.seller?.Name?.charAt(0) || "S"}</Avatar>
-              <Typography mt={2} variant="h6" fontWeight="bold">{selectedCar.seller?.Name || "N/A"}</Typography>
-              <Typography variant="body1" color="text.secondary">{selectedCar.seller?.email || "N/A"}</Typography>
-              <Typography variant="body1" color="text.secondary">{selectedCar.seller?.Number || "N/A"}</Typography>
+              <Avatar
+                sx={{
+                  bgcolor: "#1976d2",
+                  width: 56,
+                  height: 56,
+                  margin: "0 auto",
+                }}
+              >
+                {selectedCar.sellerName?.charAt(0) || "S"}
+              </Avatar>
+              <Typography mt={2} variant="h6" fontWeight="bold">
+                {selectedCar.sellerName || "N/A"}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {selectedCar.sellerEmail || "N/A"}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {selectedCar.sellerPhone || "N/A"}
+              </Typography>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary" variant="contained">Close</Button>
+          <Button onClick={handleCloseDialog} color="primary" variant="contained">
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
@@ -605,3 +737,4 @@ function BuyerCars() {
 }
 
 export default BuyerCars;
+

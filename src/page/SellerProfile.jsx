@@ -1,181 +1,84 @@
-// import React, { useState } from "react";
-// import { TextField, Button, Container, Typography, Box, Paper } from "@mui/material";
-
-// export default function BuyerProfile() {
-//   const [userData, setUserData] = useState({
-//     name: "John Doe",
-//     email: "johndoe@example.com",
-//     address: "123 Main St",
-//     mobile: "1234567890",
-//     city: "New York",
-//   });
-
-//   const [isEditing, setIsEditing] = useState(false);
-
-//   const handleChange = (e) => {
-//     setUserData({ ...userData, [e.target.name] : e.target.value });
-//   };
-
-//   const handleEdit = () => {
-//     setIsEditing(true);
-//   };
-
-//   const handleUpdate = () => {
-//     setIsEditing(false);
-//     alert("Profile updated successfully!");
-//   };
-
-//   return (
-//     <Container maxWidth="sm" sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-//       <Paper elevation={5} sx={{ p: 4, bgcolor: '#FAFAFA', color: '#757575', borderRadius: 3, width: '100%' }}>
-//         <Typography variant="h5" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#1976D2' }}>
-//           Seller Profile
-//         </Typography>
-//         <Box>
-//           <TextField 
-//             fullWidth 
-//             label="Name" 
-//             name="name" 
-//             value={userData.name} 
-//             onChange={handleChange} 
-//             margin="normal" 
-//             disabled={!isEditing} 
-//             sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
-//           />
-//           <TextField 
-//             fullWidth 
-//             label="Email" 
-//             name="email" 
-//             type="email" 
-//             value={userData.email} 
-//             onChange={handleChange} 
-//             margin="normal" 
-//             disabled={!isEditing} 
-//             sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
-//           />
-//           <TextField 
-//             fullWidth 
-//             label="Address" 
-//             name="address" 
-//             value={userData.address} 
-//             onChange={handleChange} 
-//             margin="normal" 
-//             disabled={!isEditing} 
-//             sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
-//           />
-//           <TextField 
-//             fullWidth 
-//             label="Mobile" 
-//             name="mobile" 
-//             type="tel" 
-//             value={userData.mobile} 
-//             onChange={handleChange} 
-//             margin="normal" 
-//             disabled={!isEditing} 
-//             sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
-//           />
-//           <TextField 
-//             fullWidth 
-//             label="City" 
-//             name="city" 
-//             value={userData.city} 
-//             onChange={handleChange} 
-//             margin="normal" 
-//             disabled={!isEditing} 
-//             sx={{ bgcolor: '#FFFFFF', borderRadius: 1, input: { color: '#757575' }, label: { color: '#757575' } }} 
-//           />
-//         </Box>
-//         {!isEditing ? (
-//           <Button 
-//             variant="contained" 
-//             fullWidth 
-//             onClick={handleEdit} 
-//             sx={{ mt: 3, bgcolor: '#1976D2', color: '#FFFFFF', '&:hover': { bgcolor: '#1565C0' } }}
-//           >
-//             Edit Profile
-//           </Button>
-//         ) : (
-//           <Button 
-//             variant="contained" 
-//             fullWidth 
-//             onClick={handleUpdate} 
-//             sx={{ mt: 3, bgcolor: '#1976D2', color: '#FFFFFF', '&:hover': { bgcolor: '#1565C0' } }}
-//           >
-//             Update Profile
-//           </Button>
-//         )}
-//       </Paper>
-//     </Container>
-//   );
-// }
-
-
-
-
-import React, { useState, useEffect } from "react";
-import { TextField, Button, Container, Typography, Box, Paper } from "@mui/material";
-import { db } from "../config/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { doc, updateDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Box,
+  Paper,
+} from "@mui/material";
+import { auth, db } from "../config/firebase";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function SellerProfile() {
   const [userData, setUserData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-     const fetchUserData = async () => {
-          try {
-            const userEmail = "johndoe@example.com"; // Replace with auth user email
-            const q = query(collection(db, "buyer_registration"), where("Email", "==", userEmail));
-            const querySnapshot = await getDocs(q);
-        
-            if (!querySnapshot.empty) {
-              const doc = querySnapshot.docs[0];
-              const userData = doc.data();
-              setUserData({ ...userData, docId: doc.id }); // include doc ID
-            } else {
-              console.log("No user found");
-            }
-          } catch (error) {
-            console.error("Error fetching user data:", error);
-          }
-        };
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const q = query(
+            collection(db, "seller_registration"),
+            where("sellerId", "==", user.uid)
+          );
+          const snapshot = await getDocs(q);
 
-    fetchUserData();
+          if (!snapshot.empty) {
+            const docSnap = snapshot.docs[0];
+            const data = docSnap.data();
+            setUserData({ ...data, docId: docSnap.id });
+          } else {
+            console.warn("No seller profile found for this account.");
+          }
+        } catch (error) {
+          console.error("Error fetching seller data:", error);
+        }
+      } else {
+        console.warn("User not logged in.");
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
+  const handleUpdate = async () => {
+    try {
+      const { Name, Email, Address, Mobile, City, docId } = userData;
+      const docRef = doc(db, "seller_registration", docId);
+
+      await updateDoc(docRef, {
+        Name,
+        Email,
+        Address,
+        Mobile,
+        City,
+      });
+
+      alert("Profile updated successfully!");
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating seller profile:", error);
+      alert("Failed to update profile.");
+    }
   };
 
-  const handleUpdate = async () => {
-    const { Name, Address, Mobile, City } = userData;
-  
-    // Validate fields are not empty
-    if (!Name || !Address || !Mobile || !City) {
-      alert("Please fill in all the required fields before updating.");
-      return;
-    }
-  
-    try {
-      const docRef = doc(db, "buyer_registration", userData.docId);
-      await updateDoc(docRef, { Name, Address, Mobile, City });
-  
-      setIsEditing(false);
-      alert("Profile updated successfully!");
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile. Try again.");
-    }
-  };
-  
-  if (!userData) {
-    return <Typography>Loading profile...</Typography>;
-  }
+  if (loading) return <Typography>Loading profile...</Typography>;
+  if (!userData) return <Typography>No profile data found.</Typography>;
 
   return (
     <Container maxWidth="sm" sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -184,74 +87,73 @@ export default function SellerProfile() {
           Seller Profile
         </Typography>
         <Box>
-          <TextField 
-            fullWidth 
-            label="Name" 
-            name="Name" 
-            value={userData.Name} 
-            onChange={handleChange} 
-            margin="normal" 
-            disabled={!isEditing} 
+          <TextField
+            fullWidth
+            label="Name"
+            name="Name"
+            value={userData.Name}
+            onChange={handleChange}
+            margin="normal"
+            disabled={!isEditing}
+            sx={fieldStyle}
           />
-          <TextField 
-            fullWidth 
-            label="Email" 
-            name="Email" 
-            type="email" 
-            value={userData.Email} 
-            onChange={handleChange} 
-            margin="normal" 
-            disabled 
+          <TextField
+            fullWidth
+            label="Email"
+            name="Email"
+            value={userData.Email}
+            onChange={handleChange}
+            margin="normal"
+            disabled
+            sx={fieldStyle}
           />
-          <TextField 
-            fullWidth 
-            label="Address" 
-            name="Address" 
-            value={userData.Address} 
-            onChange={handleChange} 
-            margin="normal" 
-            disabled={!isEditing} 
+          <TextField
+            fullWidth
+            label="Address"
+            name="Address"
+            value={userData.Address}
+            onChange={handleChange}
+            margin="normal"
+            disabled={!isEditing}
+            sx={fieldStyle}
           />
-          <TextField 
-            fullWidth 
-            label="Mobile" 
-            name="Mobile" 
-            type="tel" 
-            value={userData.Mobile} 
-            onChange={handleChange} 
-            margin="normal" 
-            disabled={!isEditing} 
+          <TextField
+            fullWidth
+            label="Mobile"
+            name="Mobile"
+            value={userData.Mobile}
+            onChange={handleChange}
+            margin="normal"
+            disabled={!isEditing}
+            sx={fieldStyle}
           />
-          <TextField 
-            fullWidth 
-            label="City" 
-            name="City" 
-            value={userData.City} 
-            onChange={handleChange} 
-            margin="normal" 
-            disabled={!isEditing} 
+          <TextField
+            fullWidth
+            label="City"
+            name="City"
+            value={userData.City}
+            onChange={handleChange}
+            margin="normal"
+            disabled={!isEditing}
+            sx={fieldStyle}
           />
         </Box>
-        {!isEditing ? (
-          <Button 
-            variant="contained" 
-            fullWidth 
-            onClick={handleEdit} 
-            sx={{ mt: 3, bgcolor: '#1976D2', color: '#FFFFFF' }}
-          >
-            Edit Profile
-          </Button>
-        ) : (
-          <Button 
-            variant="contained" 
-            fullWidth 
-            onClick={handleUpdate} 
-            sx={{ mt: 3, bgcolor: '#1976D2', color: '#FFFFFF' }}
-          >
-            Update Profile
-          </Button>
-        )}
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={isEditing ? handleUpdate : () => setIsEditing(true)}
+          sx={{ mt: 3, bgcolor: '#1976D2', color: '#FFFFFF', '&:hover': { bgcolor: '#1565C0' } }}
+        >
+          {isEditing ? "Update Profile" : "Edit Profile"}
+        </Button>
       </Paper>
     </Container>
   );
 }
+
+const fieldStyle = {
+  bgcolor: '#FFFFFF',
+  borderRadius: 1,
+  input: { color: '#757575' },
+  label: { color: '#757575' },
+};

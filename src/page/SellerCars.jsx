@@ -123,50 +123,74 @@
 // export default SellerCars;
 
 import React, { useEffect, useState } from "react";
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Grid, 
-  Card, 
-  CardMedia, 
-  CardContent, 
-  CardActions, 
-  Button 
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActions,
+  Button,
 } from "@mui/material";
-import { db, auth } from "../config/firebase"; // Firebase auth & Firestore
-import { collection, getDocs, deleteDoc, doc, query, where } from "firebase/firestore";
+import { db, auth } from "../config/firebase";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  where,
+} from "firebase/firestore";
 
 function SellerCars() {
   const [carList, setCarList] = useState([]);
 
   useEffect(() => {
-    const fetchCars = async () => {
+    const fetchSellerCars = async () => {
       try {
         const user = auth.currentUser;
-        if (!user) return; // Ensure user is logged in
+        if (!user) return;
 
-        const q = query(collection(db, "RegisterVehicle"), where("sellerId", "==", user.uid));
-        const querySnapshot = await getDocs(q);
-        const vehiclesData = querySnapshot.docs.map(doc => ({
+        // Step 1: Get seller document ID by email
+        const sellerQuery = query(
+          collection(db, "seller_registration"),
+          where("Email", "==", user.email)
+        );
+        const sellerSnap = await getDocs(sellerQuery);
+        if (sellerSnap.empty) {
+          console.log("Seller not found.");
+          return;
+        }
+        const sellerDoc = sellerSnap.docs[0];
+        const sellerId = sellerDoc.id;
+
+        // Step 2: Fetch vehicles using sellerId
+        const vehiclesQuery = query(
+          collection(db, "RegisterVehicle"),
+          where("sellerId", "==", sellerId)
+        );
+        const vehicleSnap = await getDocs(vehiclesQuery);
+        const vehicleData = vehicleSnap.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setCarList(vehiclesData);
+        setCarList(vehicleData);
       } catch (error) {
         console.error("Error fetching vehicles:", error);
       }
     };
 
-    fetchCars();
+    fetchSellerCars();
   }, []);
 
   const handleRemoveCar = async (id) => {
     if (!window.confirm("Are you sure you want to delete this vehicle?")) return;
 
     try {
-      await deleteDoc(doc(db, "RegisterVehicle", id)); // Correct collection name
-      setCarList(prevList => prevList.filter(vehicle => vehicle.id !== id)); // Update UI
+      await deleteDoc(doc(db, "RegisterVehicle", id));
+      setCarList((prev) => prev.filter((vehicle) => vehicle.id !== id));
       alert("Vehicle removed successfully!");
     } catch (error) {
       console.error("Error removing vehicle:", error);
@@ -177,28 +201,37 @@ function SellerCars() {
   return (
     <Box sx={{ p: 4, backgroundColor: "white", minHeight: "100vh" }}>
       <Container>
-        <Typography variant="h3" align="center" gutterBottom sx={{ fontWeight: "bold", color: "#0D47A1" }}>
+        <Typography
+          variant="h3"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: "bold", color: "#0D47A1" }}
+        >
           My Vehicles
         </Typography>
         <Grid container spacing={2} mt={3} justifyContent="center">
           {carList.length > 0 ? (
             carList.map((vehicle) => (
               <Grid item xs={12} sm={6} md={4} key={vehicle.id}>
-                <Card 
-                  sx={{ 
-                    height: "100%", 
-                    display: "flex", 
-                    flexDirection: "column", 
-                    boxShadow: 6, 
-                    borderRadius: 3, 
-                    transition: "0.3s", 
-                    "&:hover": { transform: "scale(1.05)" } 
+                <Card
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    boxShadow: 6,
+                    borderRadius: 3,
+                    transition: "0.3s",
+                    "&:hover": { transform: "scale(1.05)" },
                   }}
                 >
                   <CardMedia
                     component="img"
                     height="250"
-                    image={vehicle.image || "/images/default-car.jpg"} // Default image if none
+                    image={
+                      Array.isArray(vehicle.Image) && vehicle.Image.length > 0
+                        ? vehicle.Image[0]
+                        : "/images/default-car.jpg"
+                    }
                     alt={vehicle.VehicleModel}
                   />
                   <CardContent sx={{ flexGrow: 1, textAlign: "center" }}>
@@ -213,9 +246,9 @@ function SellerCars() {
                     <Button variant="outlined" color="secondary" sx={{ borderRadius: 3, px: 3 }}>
                       View Details
                     </Button>
-                    <Button 
-                      variant="outlined" 
-                      color="error" 
+                    <Button
+                      variant="outlined"
+                      color="error"
                       sx={{ borderRadius: 3, px: 3 }}
                       onClick={() => handleRemoveCar(vehicle.id)}
                     >
@@ -237,4 +270,3 @@ function SellerCars() {
 }
 
 export default SellerCars;
-

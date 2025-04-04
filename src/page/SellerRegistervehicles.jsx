@@ -12,8 +12,25 @@ import {
   Paper,
 } from "@mui/material";
 import { db, auth } from "../config/firebase";
-import { collection, doc, setDoc, query, where,getDocs,serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  query,
+  where,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+
+// 🔧 Convert image file to base64 string
+const toBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
 
 function SellerRegisterVehicles() {
   const [FormData, setFormData] = useState({
@@ -56,7 +73,7 @@ function SellerRegisterVehicles() {
       Transmissiontype,
       Image,
     } = FormData;
-  
+
     if (
       !Brand ||
       !VehicleModel ||
@@ -75,39 +92,38 @@ function SellerRegisterVehicles() {
       alert("Please fill in all the fields and upload at least one image.");
       return;
     }
-  
+
     try {
       const user = auth.currentUser;
       if (!user) {
         alert("Please log in to register a vehicle");
         return;
       }
-  
-      // 🔍 Fetch sellerId from 'seller_registration' by email
+
       const sellerQuery = query(
         collection(db, "seller_registration"),
         where("Email", "==", user.email)
       );
       const querySnapshot = await getDocs(sellerQuery);
-  
+
       if (querySnapshot.empty) {
         alert("Seller not found in registration database.");
         return;
       }
-  
+
       const sellerDoc = querySnapshot.docs[0];
-      const sellerId = sellerDoc.id; // Or sellerDoc.data().sellerId if you stored it explicitly
-  
+      const sellerId = sellerDoc.id;
+
       const newVehicleRef = doc(RegisterVehicleRef);
       const vehicleId = newVehicleRef.id;
-  
+
       await setDoc(newVehicleRef, {
         ...FormData,
         sellerId: sellerId,
         vehicleId: vehicleId,
         createdAt: serverTimestamp(),
       });
-  
+
       alert("Vehicle Registered Successfully!");
       navigate("/Seller/Cars");
     } catch (err) {
@@ -115,7 +131,6 @@ function SellerRegisterVehicles() {
       alert("Failed to register vehicle. Try again later.");
     }
   };
-  
 
   return (
     <Container sx={{ mt: 8, mb: 4 }}>
@@ -136,78 +151,27 @@ function SellerRegisterVehicles() {
           Register Your Vehicle
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="Brand"
-              fullWidth
-              label="Brand"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="VehicleModel"
-              fullWidth
-              label="Model"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="Insurance"
-              fullWidth
-              label="Insurance Status"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="CarKmsRun"
-              fullWidth
-              label="Car Kms Run"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="Milage"
-              fullWidth
-              label="Mileage"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="Vehiclenumber"
-              fullWidth
-              label="Vehicle Number"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="RCBookNumber"
-              fullWidth
-              label="RC Book Number"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="Owners"
-              fullWidth
-              label="Number of Owners"
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              name="Price"
-              fullWidth
-              label="Price"
-              onChange={handleChange}
-            />
-          </Grid>
+          {[
+            { label: "Brand", name: "Brand" },
+            { label: "Model", name: "VehicleModel" },
+            { label: "Insurance Status", name: "Insurance" },
+            { label: "Car Kms Run", name: "CarKmsRun" },
+            { label: "Mileage", name: "Milage" },
+            { label: "Vehicle Number", name: "Vehiclenumber" },
+            { label: "RC Book Number", name: "RCBookNumber" },
+            { label: "Number of Owners", name: "Owners" },
+            { label: "Price", name: "Price" },
+          ].map((field, idx) => (
+            <Grid item xs={12} sm={6} key={idx}>
+              <TextField
+                name={field.name}
+                fullWidth
+                label={field.label}
+                onChange={handleChange}
+              />
+            </Grid>
+          ))}
+
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Fuel Type</InputLabel>
@@ -219,6 +183,7 @@ function SellerRegisterVehicles() {
               </Select>
             </FormControl>
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Vehicle Type</InputLabel>
@@ -234,6 +199,7 @@ function SellerRegisterVehicles() {
               </Select>
             </FormControl>
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Transmission Type</InputLabel>
@@ -247,6 +213,7 @@ function SellerRegisterVehicles() {
               </Select>
             </FormControl>
           </Grid>
+
           <Grid item xs={12}>
             <TextField
               name="MoreDetails"
@@ -257,6 +224,7 @@ function SellerRegisterVehicles() {
               onChange={handleChange}
             />
           </Grid>
+
           <Grid item xs={12}>
             <Button variant="outlined" component="label">
               Upload Vehicle Images
@@ -265,22 +233,35 @@ function SellerRegisterVehicles() {
                 hidden
                 accept="image/*"
                 multiple
-                onChange={(e) =>
+                onChange={async (e) => {
+                  const files = Array.from(e.target.files);
+                  const base64Images = await Promise.all(
+                    files.map((file) => toBase64(file))
+                  );
                   setFormData({
                     ...FormData,
-                    Image: Array.from(e.target.files),
-                  })
-                }
+                    Image: base64Images,
+                  });
+                }}
               />
             </Button>
+
             {FormData.Image.length > 0 && (
-              <ul>
+              <Grid container spacing={2} mt={2}>
                 {FormData.Image.map((img, idx) => (
-                  <li key={idx}>{img.name}</li>
+                  <Grid item key={idx}>
+                    <img
+                      src={img}
+                      alt={`preview-${idx}`}
+                      width="100"
+                      style={{ borderRadius: 8, border: "1px solid #ccc" }}
+                    />
+                  </Grid>
                 ))}
-              </ul>
+              </Grid>
             )}
           </Grid>
+
           <Grid item xs={12}>
             <Button
               variant="contained"

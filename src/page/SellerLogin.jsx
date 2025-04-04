@@ -28,9 +28,16 @@ function SellerLogin() {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, Email.trim(), Password.trim());
+      const userCredential = await signInWithEmailAndPassword(auth, Email.trim(), Password.trim());
+      const user = userCredential.user;
+
+      // ✅ Save seller ID and email in localStorage
+      localStorage.setItem("userId", user.uid);
+      localStorage.setItem("userEmail", user.email);
+      localStorage.setItem("userRole", "seller"); // optional, if you want role-based routing
+
       alert("Login successful!");
-      navigate("/Seller/Profile"); // Or wherever you want to send sellers after login
+      navigate("/Seller/Profile"); // Update this path based on your app's route structure
     } catch (error) {
       console.error("Login error:", error);
       alert("Login failed: " + error.message);
@@ -164,3 +171,4 @@ function SellerLogin() {
 }
 
 export default SellerLogin;
+
