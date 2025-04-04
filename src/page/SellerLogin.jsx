@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Container, TextField, Button, Grid, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../config/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 function SellerLogin() {
   const [formData, setFormData] = useState({
@@ -7,11 +10,31 @@ function SellerLogin() {
     Password: "",
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleLogin = async () => {
+    const { Email, Password } = formData;
+
+    if (!Email || !Password) {
+      alert("Please enter both email and password.");
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, Email.trim(), Password.trim());
+      alert("Login successful!");
+      navigate("/Seller/Profile"); // Or wherever you want to send sellers after login
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Login failed: " + error.message);
+    }
   };
 
   return (
@@ -22,7 +45,7 @@ function SellerLogin() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white", // Matches Homepage Footer
+        backgroundColor: "white",
       }}
     >
       <form
@@ -30,7 +53,7 @@ function SellerLogin() {
           width: "80%",
           maxWidth: "400px",
           padding: "20px",
-          background: "#FAFAFA", // Matches Homepage card background
+          background: "#FAFAFA",
           borderRadius: "12px",
           boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
         }}
@@ -41,7 +64,7 @@ function SellerLogin() {
             textAlign: "center",
             fontSize: "28px",
             fontWeight: "bold",
-            color: "#1976D2", // Matches Homepage primary
+            color: "#1976D2",
             marginBottom: "20px",
           }}
         >
@@ -57,27 +80,28 @@ function SellerLogin() {
               label="Email"
               variant="outlined"
               onChange={handleChange}
+              value={formData.Email}
               sx={{
                 "& .MuiOutlinedInput-root": {
-                  backgroundColor: "#FFFFFF", // Matches Homepage TextField background
+                  backgroundColor: "#FFFFFF",
                   "& fieldset": {
-                    borderColor: "#1976D2", // Matches Homepage primary
+                    borderColor: "#1976D2",
                   },
                   "&:hover fieldset": {
-                    borderColor: "#1565C0", // Darker primary on hover
+                    borderColor: "#1565C0",
                   },
                   "&.Mui-focused fieldset": {
-                    borderColor: "#1976D2", // Matches Homepage primary
+                    borderColor: "#1976D2",
                   },
                 },
                 "& .MuiInputBase-input": {
-                  color: "#757575", // Matches Homepage secondary text
+                  color: "#757575",
                 },
                 "& .MuiInputLabel-root": {
-                  color: "#757575", // Matches Homepage secondary text
+                  color: "#757575",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#1976D2", // Matches Homepage primary
+                  color: "#1976D2",
                 },
               }}
             />
@@ -90,6 +114,7 @@ function SellerLogin() {
               label="Password"
               variant="outlined"
               onChange={handleChange}
+              value={formData.Password}
               sx={{
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "#FFFFFF",
@@ -124,10 +149,10 @@ function SellerLogin() {
                 padding: "12px",
                 fontSize: "16px",
                 borderRadius: "5px",
-                backgroundColor: "#1976D2", // Matches Homepage primary
-                color: "#FFFFFF", // Matches Homepage button text
+                backgroundColor: "#1976D2",
+                color: "#FFFFFF",
               }}
-              onClick={() => console.log("Login Data:", formData)}
+              onClick={handleLogin}
             >
               Login
             </Button>
@@ -139,5 +164,3 @@ function SellerLogin() {
 }
 
 export default SellerLogin;
-
-

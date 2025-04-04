@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Container, TextField, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { db } from "../config/firebase";
-import { collection, addDoc } from "firebase/firestore";
-import {  doc, setDoc } from "firebase/firestore";
+import { db, auth } from "../config/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 function SellerRegistration() {
   const [formData, setFormData] = useState({
@@ -13,7 +13,7 @@ function SellerRegistration() {
     Mobile: "",
     Password: "",
   });
- 
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,31 +25,46 @@ function SellerRegistration() {
 
   const handleRegister = async () => {
     const { Name, Address, Email, Mobile, Password } = formData;
-  
-    // Check for empty fields
+
     if (!Name || !Address || !Email || !Mobile || !Password) {
       alert("Please fill in all the fields before registering.");
       return;
     }
-  
+
     try {
-      const sellerRef = doc(collection(db, "seller_registration"));
-      const sellerId = sellerRef.id;
-  
+      // Step 1: Create seller in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        Email.trim(),
+        Password.trim()
+      );
+      const sellerId = userCredential.user.uid;
+
+      // Step 2: Save seller profile in Firestore
+      const sellerRef = doc(db, "seller_registration", sellerId);
       await setDoc(sellerRef, {
-        ...formData,
-        sellerId: sellerId, // explicitly store the unique ID
+        sellerId,
+        Name,
+        Address,
+        Email,
+        Mobile,
       });
-  
+
       alert("Registration successful!");
-      setFormData({ Name: "", Address: "", Email: "", Mobile: "", Password: "" });
+      setFormData({
+        Name: "",
+        Address: "",
+        Email: "",
+        Mobile: "",
+        Password: "",
+      });
+
       navigate("/Seller/Login");
     } catch (error) {
-      console.error("Error adding document: ", error);
-      alert("Registration failed! Try again.");
+      console.error("Registration error:", error);
+      alert("Registration failed: " + error.message);
     }
   };
-  
 
   return (
     <Container

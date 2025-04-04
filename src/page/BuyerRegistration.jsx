@@ -7,8 +7,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { db } from "../config/firebase";
-import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+import { db, auth } from "../config/firebase";
+import { collection, doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 function BuyerRegistration() {
   const [formData, setFormData] = useState({
@@ -37,13 +38,24 @@ function BuyerRegistration() {
     }
 
     try {
-       const buyerRef = doc(collection(db, "buyer_registration"));
-            const buyerId = buyerRef.id;
+      // Step 1: Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        Email.trim(),
+        Password.trim()
+      );
 
-     await setDoc(buyerRef, {
-             ...formData,
-             buyerId: buyerId, // explicitly store the unique ID
-           });
+      const userId = userCredential.user.uid;
+
+      // Step 2: Store additional buyer data in Firestore
+      const buyerRef = doc(db, "buyer_registration", userId);
+      await setDoc(buyerRef, {
+        buyerId: userId,
+        Name,
+        Address,
+        Email,
+        Mobile,
+      });
 
       alert("Registration successful!");
       setFormData({
@@ -56,8 +68,8 @@ function BuyerRegistration() {
 
       navigate("/Buyer/Login");
     } catch (error) {
-      console.error("Error adding document: ", error);
-      alert("Registration failed! Try again.");
+      console.error("Registration Error:", error);
+      alert("Registration failed: " + error.message);
     }
   };
 
