@@ -12,7 +12,7 @@ import {
   Paper,
 } from "@mui/material";
 import { db, auth } from "../config/firebase";
-import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { collection, doc, setDoc, query, where,getDocs,serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 function SellerRegisterVehicles() {
@@ -56,7 +56,7 @@ function SellerRegisterVehicles() {
       Transmissiontype,
       Image,
     } = FormData;
-
+  
     if (
       !Brand ||
       !VehicleModel ||
@@ -75,24 +75,39 @@ function SellerRegisterVehicles() {
       alert("Please fill in all the fields and upload at least one image.");
       return;
     }
-
+  
     try {
       const user = auth.currentUser;
       if (!user) {
         alert("Please log in to register a vehicle");
         return;
       }
-
+  
+      // 🔍 Fetch sellerId from 'seller_registration' by email
+      const sellerQuery = query(
+        collection(db, "seller_registration"),
+        where("Email", "==", user.email)
+      );
+      const querySnapshot = await getDocs(sellerQuery);
+  
+      if (querySnapshot.empty) {
+        alert("Seller not found in registration database.");
+        return;
+      }
+  
+      const sellerDoc = querySnapshot.docs[0];
+      const sellerId = sellerDoc.id; // Or sellerDoc.data().sellerId if you stored it explicitly
+  
       const newVehicleRef = doc(RegisterVehicleRef);
       const vehicleId = newVehicleRef.id;
-
+  
       await setDoc(newVehicleRef, {
         ...FormData,
-        sellerId: user.uid,
+        sellerId: sellerId,
         vehicleId: vehicleId,
         createdAt: serverTimestamp(),
       });
-
+  
       alert("Vehicle Registered Successfully!");
       navigate("/Seller/Cars");
     } catch (err) {
@@ -100,6 +115,7 @@ function SellerRegisterVehicles() {
       alert("Failed to register vehicle. Try again later.");
     }
   };
+  
 
   return (
     <Container sx={{ mt: 8, mb: 4 }}>
@@ -121,31 +137,76 @@ function SellerRegisterVehicles() {
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
-            <TextField name="Brand" fullWidth label="Brand" onChange={handleChange} />
+            <TextField
+              name="Brand"
+              fullWidth
+              label="Brand"
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="VehicleModel" fullWidth label="Model" onChange={handleChange} />
+            <TextField
+              name="VehicleModel"
+              fullWidth
+              label="Model"
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="Insurance" fullWidth label="Insurance Status" onChange={handleChange} />
+            <TextField
+              name="Insurance"
+              fullWidth
+              label="Insurance Status"
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="CarKmsRun" fullWidth label="Car Kms Run" onChange={handleChange} />
+            <TextField
+              name="CarKmsRun"
+              fullWidth
+              label="Car Kms Run"
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="Milage" fullWidth label="Mileage" onChange={handleChange} />
+            <TextField
+              name="Milage"
+              fullWidth
+              label="Mileage"
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="Vehiclenumber" fullWidth label="Vehicle Number" onChange={handleChange} />
+            <TextField
+              name="Vehiclenumber"
+              fullWidth
+              label="Vehicle Number"
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="RCBookNumber" fullWidth label="RC Book Number" onChange={handleChange} />
+            <TextField
+              name="RCBookNumber"
+              fullWidth
+              label="RC Book Number"
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="Owners" fullWidth label="Number of Owners" onChange={handleChange} />
+            <TextField
+              name="Owners"
+              fullWidth
+              label="Number of Owners"
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField name="Price" fullWidth label="Price" onChange={handleChange} />
+            <TextField
+              name="Price"
+              fullWidth
+              label="Price"
+              onChange={handleChange}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
@@ -161,7 +222,11 @@ function SellerRegisterVehicles() {
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Vehicle Type</InputLabel>
-              <Select name="Vehicletype" value={FormData.Vehicletype} onChange={handleChange}>
+              <Select
+                name="Vehicletype"
+                value={FormData.Vehicletype}
+                onChange={handleChange}
+              >
                 <MenuItem value="SUV">SUV</MenuItem>
                 <MenuItem value="Sedan">Sedan</MenuItem>
                 <MenuItem value="Hatchback">Hatchback</MenuItem>
@@ -172,7 +237,11 @@ function SellerRegisterVehicles() {
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Transmission Type</InputLabel>
-              <Select name="Transmissiontype" value={FormData.Transmissiontype} onChange={handleChange}>
+              <Select
+                name="Transmissiontype"
+                value={FormData.Transmissiontype}
+                onChange={handleChange}
+              >
                 <MenuItem value="Manual">Manual</MenuItem>
                 <MenuItem value="Automatic">Automatic</MenuItem>
               </Select>
@@ -213,7 +282,12 @@ function SellerRegisterVehicles() {
             )}
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" color="primary" fullWidth onClick={sendData}>
+            <Button
+              variant="contained"
+              color="primary"
+              fullWidth
+              onClick={sendData}
+            >
               Submit
             </Button>
           </Grid>
@@ -224,5 +298,3 @@ function SellerRegisterVehicles() {
 }
 
 export default SellerRegisterVehicles;
-
-
