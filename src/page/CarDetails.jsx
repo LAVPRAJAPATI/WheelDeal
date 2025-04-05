@@ -1,6 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Container, Grid, Typography, Card, CardMedia, CardContent, Button, Box } from "@mui/material";
+import {
+  Container,
+  Grid,
+  Typography,
+  Card,
+  CardMedia,
+  CardContent,
+  Button,
+  Box
+} from "@mui/material";
 
 function CarDetails() {
   const location = useLocation();
@@ -22,8 +31,7 @@ function CarDetails() {
     Vehicletype: "N/A",
     Transmissiontype: "N/A",
     MoreDetails: "No additional details provided",
-    VehicleImages: [],
-    image: 'https://via.placeholder.com/400'
+    Image: "https://via.placeholder.com/400" // Default placeholder image
   };
 
   const data = { ...defaultData, ...carData };
@@ -61,28 +69,26 @@ function CarDetails() {
         </Typography>
 
         <Grid container spacing={3} direction="column">
-          {/* Images Section */}
+          {/* Image Section */}
           <Grid item xs={12}>
             <Card>
-              {data.image || data.VehicleImages.length > 0 ? (
-                <Box>
-                  <CardMedia
-                    component="img"
-                    height="400"
-                    image={data.VehicleImages.length > 0 ? URL.createObjectURL(data.VehicleImages[0]) : data.image}
-                    alt={`${data.Brand} ${data.VehicleModel}`}
-                    sx={{ objectFit: "cover" }}
-                  />
-                </Box>
+              {data.Image ? (
+                <CardMedia
+                  component="img"
+                  height="400"
+                  image={data.Image}
+                  alt={`${data.Brand} ${data.VehicleModel}`}
+                  sx={{ objectFit: "cover" }}
+                />
               ) : (
                 <CardContent>
-                  <Typography textAlign="center">No images available</Typography>
+                  <Typography textAlign="center">No image available</Typography>
                 </CardContent>
               )}
             </Card>
           </Grid>
 
-          {/* Details Section */}
+          {/* Vehicle Details Section */}
           <Grid item xs={12}>
             <Card>
               <CardContent>
@@ -90,43 +96,19 @@ function CarDetails() {
                   Vehicle Details
                 </Typography>
                 <Grid container spacing={1}>
-                  <Grid item xs={12}>
-                    <Typography><strong>Price:</strong> {data.Price}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography><strong>Fuel Type:</strong> {data.Fuel}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography><strong>Vehicle Type:</strong> {data.Vehicletype}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography><strong>Transmission:</strong> {data.Transmissiontype}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography><strong>Mileage:</strong> {data.Milage}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography><strong>KMs Run:</strong> {data.CarKmsRun}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography><strong>Owners:</strong> {data.Owners}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography><strong>Insurance:</strong> {data.Insurance}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography><strong>VIN:</strong> {data.Vehiclenumber}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography><strong>RC Book:</strong> {data.RCBookNumber}</Typography>
-                  </Grid>
+                  <Grid item xs={12}><Typography><strong>Price:</strong> {data.Price}</Typography></Grid>
+                  <Grid item xs={12}><Typography><strong>Fuel Type:</strong> {data.Fuel}</Typography></Grid>
+                  <Grid item xs={12}><Typography><strong>Vehicle Type:</strong> {data.Vehicletype}</Typography></Grid>
+                  <Grid item xs={12}><Typography><strong>Transmission:</strong> {data.Transmissiontype}</Typography></Grid>
+                  <Grid item xs={12}><Typography><strong>Mileage:</strong> {data.Milage}</Typography></Grid>
+                  <Grid item xs={12}><Typography><strong>KMs Run:</strong> {data.CarKmsRun}</Typography></Grid>
+                  <Grid item xs={12}><Typography><strong>Owners:</strong> {data.Owners}</Typography></Grid>
+                  <Grid item xs={12}><Typography><strong>Insurance:</strong> {data.Insurance}</Typography></Grid>
+                  <Grid item xs={12}><Typography><strong>VIN:</strong> {data.Vehiclenumber}</Typography></Grid>
+                  <Grid item xs={12}><Typography><strong>RC Book:</strong> {data.RCBookNumber}</Typography></Grid>
                   <Grid item xs={12} sx={{ mt: 2 }}>
-                    <Typography variant="h6" gutterBottom>
-                      Additional Details
-                    </Typography>
-                    <Typography color="textSecondary">
-                      {data.MoreDetails}
-                    </Typography>
+                    <Typography variant="h6" gutterBottom>Additional Details</Typography>
+                    <Typography color="textSecondary">{data.MoreDetails}</Typography>
                   </Grid>
                 </Grid>
                 <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
@@ -153,3 +135,4 @@ function CarDetails() {
 }
 
 export default CarDetails;
+

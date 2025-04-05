@@ -28,6 +28,7 @@ const settings = ["Profile", "Logout"];
 const sellerMenu = [
   { name: "Register Vehicles", path: "/Seller/Registervehicles" },
   { name: "Inquiries", path: "/Seller/Inquiries" },
+  { name: "My Cars", path: "/Seller/Cars" }
 ];
 
 const buyerMenu = [

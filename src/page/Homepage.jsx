@@ -199,6 +199,9 @@
 
 // export default Homepage;
 
+
+
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -217,7 +220,6 @@ import {
   DialogActions,
   Avatar,
   Paper,
-  Divider,
 } from "@mui/material";
 import { db } from "../config/firebase";
 import {
@@ -241,10 +243,20 @@ function Homepage() {
     const fetchCars = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "RegisterVehicle"));
-        const carsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const carsData = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          const imageSrc =
+            Array.isArray(data.Image) && data.Image.length > 0
+              ? data.Image[0]
+              : "/images/default-car.jpg";
+
+          return {
+            id: doc.id,
+            ...data,
+            image: imageSrc,
+          };
+        });
+
         setFeaturedCars(carsData.slice(0, 6));
       } catch (error) {
         console.error("Error fetching cars:", error);
@@ -302,8 +314,8 @@ function Homepage() {
       }
 
       const inquiryData = {
-        carId: car.id,
-        carModel: car.VehicleModel,
+        vehicleId: car.id,
+        VehicleModel: car.VehicleModel,
         price: car.Price,
         timestamp: new Date(),
         sellerEmail: sellerData?.Email || "N/A",
@@ -374,9 +386,13 @@ function Homepage() {
                 >
                   <CardMedia
                     component="img"
-                    image={car.image || "/images/default-car.jpg"}
+                    image={car.image}
                     alt={car.VehicleModel}
                     sx={{ height: 250 }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/images/default-car.jpg";
+                    }}
                   />
                   <CardContent sx={{ textAlign: "center" }}>
                     <Typography variant="h5" fontWeight="bold" color="primary">
@@ -416,11 +432,7 @@ function Homepage() {
       </Container>
 
       {/* Seller Details Dialog */}
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        PaperComponent={Paper}
-      >
+      <Dialog open={openDialog} onClose={handleCloseDialog} PaperComponent={Paper}>
         <DialogTitle
           sx={{
             backgroundColor: "#1976d2",
@@ -444,13 +456,13 @@ function Homepage() {
                 {sellerDetails.Name?.charAt(0) || "S"}
               </Avatar>
               <Typography mt={2} variant="h6" fontWeight="bold">
-                {sellerDetails.Name || "N/A"}
+                {sellerDetails.Name}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                {sellerDetails.Email || "N/A"}
+                {sellerDetails.Email}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                {sellerDetails.Number || "N/A"}
+                {sellerDetails.Number}
               </Typography>
             </Box>
           ) : (
@@ -458,34 +470,22 @@ function Homepage() {
           )}
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={handleCloseDialog}
-            color="primary"
-            variant="contained"
-          >
+          <Button onClick={handleCloseDialog} color="primary" variant="contained">
             Close
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* About Us and Footer */}
+      {/* About Us & Footer */}
       <Box sx={{ backgroundColor: "#f5f5f5", py: 6 }}>
         <Container maxWidth="md">
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            gutterBottom
-            align="center"
-          >
+          <Typography variant="h5" fontWeight="bold" gutterBottom align="center">
             About Us
           </Typography>
           <Typography variant="body1" align="center" color="text.secondary">
             WheelDeal is a car listing platform designed to connect buyers and
-            sellers seamlessly. We provide a transparent and easy-to-use
-            interface where users can browse, list, and inquire about vehicles.
-            Our goal is to simplify your car buying or selling experience by
-            offering verified listings and clear seller details — all in one
-            place.
+            sellers seamlessly. We provide a transparent and easy-to-use interface
+            where users can browse, list, and inquire about vehicles.
           </Typography>
         </Container>
       </Box>
@@ -514,3 +514,7 @@ function Homepage() {
 }
 
 export default Homepage;
+
+
+
+

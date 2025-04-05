@@ -490,7 +490,6 @@ function BuyerCars() {
         return;
       }
 
-      // 🔹 Fetch buyer info using email
       const buyerQuery = query(
         collection(db, "buyer_registration"),
         where("Email", "==", buyerEmail)
@@ -503,7 +502,6 @@ function BuyerCars() {
       const buyerData = buyerSnapshot.docs[0].data();
       const buyerId = buyerData.buyerId;
 
-      // 🔹 Fetch seller info using sellerId from car
       const sellerId = car.sellerId;
       const sellerRef = doc(db, "seller_registration", sellerId);
       const sellerSnap = await getDoc(sellerRef);
@@ -514,10 +512,9 @@ function BuyerCars() {
       }
       const sellerData = sellerSnap.data();
 
-      // 🔹 Check for duplicate inquiry
       const existingInquiryQuery = query(
         collection(db, "buyer_pastinquiry"),
-        where("carId", "==", car.id),
+        where("vehicleId", "==", car.id),
         where("buyerId", "==", buyerId)
       );
       const existingInquirySnapshot = await getDocs(existingInquiryQuery);
@@ -532,10 +529,9 @@ function BuyerCars() {
         return;
       }
 
-      // 🔹 Prepare inquiry data
       const inquiryData = {
-        carId: car.id,
-        carModel: car.VehicleModel,
+        vehicleId: car.id,
+        VehicleModel: car.VehicleModel,
         price: car.Price,
         sellerId: sellerId,
         sellerEmail: sellerData.Email,
@@ -544,7 +540,6 @@ function BuyerCars() {
         timestamp: new Date(),
       };
 
-      // 🔹 Save to both collections
       await addDoc(collection(db, "buyer_pastinquiry"), inquiryData);
       await addDoc(collection(db, "seller_inquiry"), inquiryData);
 
@@ -642,7 +637,7 @@ function BuyerCars() {
                   <CardMedia
                     component="img"
                     height="250"
-                    image={car.image || "/images/default-car.jpg"}
+                    image={car.Image?.[0] || "/images/default-car.jpg"}
                     alt={car.VehicleModel}
                   />
                   <CardContent sx={{ flexGrow: 1, textAlign: "center" }}>
@@ -737,4 +732,3 @@ function BuyerCars() {
 }
 
 export default BuyerCars;
-

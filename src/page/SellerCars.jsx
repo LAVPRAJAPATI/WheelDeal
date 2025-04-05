@@ -143,9 +143,11 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 function SellerCars() {
   const [carList, setCarList] = useState([]);
+  const navigate = useNavigate(); // 👈 Add this
 
   useEffect(() => {
     const fetchSellerCars = async () => {
@@ -153,7 +155,6 @@ function SellerCars() {
         const user = auth.currentUser;
         if (!user) return;
 
-        // Step 1: Get seller document ID by email
         const sellerQuery = query(
           collection(db, "seller_registration"),
           where("Email", "==", user.email)
@@ -166,7 +167,6 @@ function SellerCars() {
         const sellerDoc = sellerSnap.docs[0];
         const sellerId = sellerDoc.id;
 
-        // Step 2: Fetch vehicles using sellerId
         const vehiclesQuery = query(
           collection(db, "RegisterVehicle"),
           where("sellerId", "==", sellerId)
@@ -196,6 +196,10 @@ function SellerCars() {
       console.error("Error removing vehicle:", error);
       alert("Failed to remove vehicle. Try again later.");
     }
+  };
+
+  const handleViewDetails = (vehicle) => {
+    navigate("/CarDetails", { state: { carData: vehicle } }); // 👈 Navigate to CarDetails
   };
 
   return (
@@ -243,7 +247,12 @@ function SellerCars() {
                     </Typography>
                   </CardContent>
                   <CardActions sx={{ justifyContent: "center", pb: 2, gap: 1 }}>
-                    <Button variant="outlined" color="secondary" sx={{ borderRadius: 3, px: 3 }}>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      sx={{ borderRadius: 3, px: 3 }}
+                      onClick={() => handleViewDetails(vehicle)} // 👈 Handle view details
+                    >
                       View Details
                     </Button>
                     <Button
