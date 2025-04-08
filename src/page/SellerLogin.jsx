@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Container, TextField, Button, Grid, Typography } from "@mui/material";
+import { Container, TextField, Button, Grid, Typography, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 function SellerLogin() {
   const [formData, setFormData] = useState({
@@ -10,6 +11,8 @@ function SellerLogin() {
     Password: "",
   });
 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -21,26 +24,66 @@ function SellerLogin() {
 
   const handleLogin = async () => {
     const { Email, Password } = formData;
+    setError("");
+    setLoading(true);
 
     if (!Email || !Password) {
-      alert("Please enter both email and password.");
+      setError("Please enter both email and password.");
+      setLoading(false);
       return;
     }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, Email.trim(), Password.trim());
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        Email.trim(),
+        Password.trim()
+      );
       const user = userCredential.user;
 
-      // ✅ Save seller ID and email in localStorage
+      // 🔍 Check if user exists in seller_registration
+      const sellerQuery = query(
+        collection(db, "seller_registration"),
+        where("Email", "==", user.email)
+      );
+      const sellerSnapshot = await getDocs(sellerQuery);
+
+      if (sellerSnapshot.empty) {
+        // Not found in seller_registration – check if user is a buyer
+        const buyerQuery = query(
+          collection(db, "buyer_registration"),
+          where("Email", "==", user.email)
+        );
+        const buyerSnapshot = await getDocs(buyerQuery);
+
+        if (!buyerSnapshot.empty) {
+          alert("This email is registered as a buyer. Please login as a buyer.");
+          navigate("/Buyer/Login");
+        } else {
+          alert("Seller not found in registration. Redirecting to registration...");
+          navigate("/Seller/Registration");
+        }
+
+        return;
+      }
+
+      // ✅ Store info in localStorage
       localStorage.setItem("userId", user.uid);
       localStorage.setItem("userEmail", user.email);
-      localStorage.setItem("userRole", "seller"); // optional, if you want role-based routing
+      localStorage.setItem("userRole", "seller");
 
-      alert("Login successful!");
-      navigate("/Seller/Profile"); // Update this path based on your app's route structure
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Login failed: " + error.message);
+      console.log("Seller login successful:", user);
+      navigate("/Seller/Profile");
+    } catch (err) {
+      console.error("Login error:", err);
+      if (err.code === "auth/user-not-found") {
+        alert("Authentication failed. Redirecting to registration...");
+        navigate("/Seller/Registration");
+      } else {
+        setError(err.message);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,6 +121,12 @@ function SellerLogin() {
           Seller Login
         </Typography>
 
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
@@ -88,28 +137,17 @@ function SellerLogin() {
               variant="outlined"
               onChange={handleChange}
               value={formData.Email}
+              required
               sx={{
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "#FFFFFF",
-                  "& fieldset": {
-                    borderColor: "#1976D2",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#1565C0",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#1976D2",
-                  },
+                  "& fieldset": { borderColor: "#1976D2" },
+                  "&:hover fieldset": { borderColor: "#1565C0" },
+                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
                 },
-                "& .MuiInputBase-input": {
-                  color: "#757575",
-                },
-                "& .MuiInputLabel-root": {
-                  color: "#757575",
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#1976D2",
-                },
+                "& .MuiInputBase-input": { color: "#757575" },
+                "& .MuiInputLabel-root": { color: "#757575" },
+                "& .MuiInputLabel-root.Mui-focused": { color: "#1976D2" },
               }}
             />
           </Grid>
@@ -122,28 +160,17 @@ function SellerLogin() {
               variant="outlined"
               onChange={handleChange}
               value={formData.Password}
+              required
               sx={{
                 "& .MuiOutlinedInput-root": {
                   backgroundColor: "#FFFFFF",
-                  "& fieldset": {
-                    borderColor: "#1976D2",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#1565C0",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#1976D2",
-                  },
+                  "& fieldset": { borderColor: "#1976D2" },
+                  "&:hover fieldset": { borderColor: "#1565C0" },
+                  "&.Mui-focused fieldset": { borderColor: "#1976D2" },
                 },
-                "& .MuiInputBase-input": {
-                  color: "#757575",
-                },
-                "& .MuiInputLabel-root": {
-                  color: "#757575",
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#1976D2",
-                },
+                "& .MuiInputBase-input": { color: "#757575" },
+                "& .MuiInputLabel-root": { color: "#757575" },
+                "& .MuiInputLabel-root.Mui-focused": { color: "#1976D2" },
               }}
             />
           </Grid>
@@ -152,6 +179,8 @@ function SellerLogin() {
               fullWidth
               variant="contained"
               color="primary"
+              onClick={handleLogin}
+              disabled={loading}
               style={{
                 padding: "12px",
                 fontSize: "16px",
@@ -159,9 +188,8 @@ function SellerLogin() {
                 backgroundColor: "#1976D2",
                 color: "#FFFFFF",
               }}
-              onClick={handleLogin}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </Grid>
         </Grid>

@@ -152,6 +152,7 @@
 // }
 
 // BuyerPastInquiries.js
+
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -168,8 +169,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
-  DialogActions
+  DialogActions,
+  Avatar
 } from '@mui/material';
 import { db } from '../config/firebase';
 import {
@@ -185,70 +186,108 @@ export default function BuyerPastInquiries() {
   const navigate = useNavigate();
   const [inquiries, setInquiries] = useState([]);
   const [buyerEmail, setBuyerEmail] = useState(null);
-  const [selectedSeller, setSelectedSeller] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
 
   useEffect(() => {
     const storedBuyerEmail = localStorage.getItem('userEmail');
     setBuyerEmail(storedBuyerEmail);
 
     if (storedBuyerEmail) {
-      const fetchBuyerInquiries = async () => {
+      const fetchInquiriesWithDetails = async () => {
         try {
           const q = query(
             collection(db, 'buyer_pastinquiry'),
             where('buyerEmail', '==', storedBuyerEmail)
           );
-          const querySnapshot = await getDocs(q);
-          const rawInquiries = querySnapshot.docs.map((doc) => ({
+          const snapshot = await getDocs(q);
+          const rawInquiries = snapshot.docs.map(doc => ({
             id: doc.id,
-            ...doc.data(),
+            ...doc.data()
           }));
 
           const enrichedInquiries = await Promise.all(
             rawInquiries.map(async (inquiry) => {
-              let vehicleData = {};
+              let carDetails = {};
               if (inquiry.vehicleId) {
-                const vehicleRef = doc(db, 'RegisterVehicle', inquiry.vehicleId);
-                const vehicleSnap = await getDoc(vehicleRef);
-                if (vehicleSnap.exists()) {
-                  const data = vehicleSnap.data();
-                  vehicleData = {
-                    image: data.Image?.[0] || null,
-                    carModel: data.VehicleModel || 'N/A',
+                const carRef = doc(db, 'RegisterVehicle', inquiry.vehicleId);
+                const carSnap = await getDoc(carRef);
+                if (carSnap.exists()) {
+                  const carData = carSnap.data();
+                  carDetails = {
+                    ...carData,
+                    image: Array.isArray(carData.Image) && carData.Image.length > 0
+                      ? carData.Image[0]
+                      : "/images/default-car.jpg"
+                  };
+                }
+              }
+
+              let sellerDetails = {};
+              if (inquiry.sellerEmail) {
+                const sellerQuery = query(
+                  collection(db, 'seller_registration'),
+                  where('Email', '==', inquiry.sellerEmail)
+                );
+                const sellerSnapshot = await getDocs(sellerQuery);
+                if (!sellerSnapshot.empty) {
+                  const sellerData = sellerSnapshot.docs[0].data();
+                  sellerDetails = {
+                    sellerName: sellerData.Name || "N/A",
+                    sellerMobile: sellerData.Mobile || "N/A",
                   };
                 }
               }
 
               return {
                 ...inquiry,
-                ...vehicleData,
+                ...carDetails,
+                ...sellerDetails
               };
             })
           );
 
           setInquiries(enrichedInquiries);
         } catch (error) {
-          console.error('Error fetching buyer inquiries:', error);
+          console.error('Error fetching enriched buyer inquiries:', error);
         }
       };
 
-      fetchBuyerInquiries();
+      fetchInquiriesWithDetails();
     }
   }, [buyerEmail]);
 
   const handleViewDetails = (inquiry) => {
-    navigate('/CarDetails/', { state: { carData: inquiry } });
+    navigate(`/CarDetails/${inquiry.vehicleId}`, {
+      state: {
+        carData: {
+          Brand: inquiry.Brand || "N/A",
+          VehicleModel: inquiry.VehicleModel || inquiry.carModel || "N/A",
+          Insurance: inquiry.Insurance || "N/A",
+          CarKmsRun: inquiry.CarKmsRun || "N/A",
+          Milage: inquiry.Milage || "N/A",
+          Vehiclenumber: inquiry.Vehiclenumber || "N/A",
+          RCBookNumber: inquiry.RCBookNumber || "N/A",
+          Owners: inquiry.Owners || "N/A",
+          Price: inquiry.Price || inquiry.price || "N/A",
+          Fuel: inquiry.Fuel || "N/A",
+          Vehicletype: inquiry.Vehicletype || "N/A",
+          Transmissiontype: inquiry.Transmissiontype || "N/A",
+          MoreDetails: inquiry.MoreDetails || "No additional details provided",
+          Image: inquiry.image || "https://via.placeholder.com/400"
+        }
+      }
+    });
   };
 
   const handleOpenDialog = (inquiry) => {
-    setSelectedSeller(inquiry);
+    setSelectedInquiry(inquiry);
     setDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
-    setSelectedSeller(null);
+    setSelectedInquiry(null);
   };
 
   return (
@@ -263,84 +302,99 @@ export default function BuyerPastInquiries() {
       </Typography>
       <Container>
         <Grid container spacing={2} mt={3} justifyContent="center">
-          {inquiries.map((inquiry) => (
-            <Grid item xs={12} sm={6} md={4} key={inquiry.id}>
-              <Card
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  boxShadow: 6,
-                  borderRadius: 3,
-                  transition: '0.3s',
-                  '&:hover': { transform: 'scale(1.05)' },
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  height="250"
-                  image={inquiry.image || '/images/default-car.jfif'}
-                  alt={inquiry.carModel || 'Car'}
-                  onError={(e) => {
-                    e.target.src = '/images/default-car.jfif';
+          {inquiries.length === 0 ? (
+            <Typography variant="h6" align="center" color="text.secondary" mt={5}>
+              No inquiries found.
+            </Typography>
+          ) : (
+            inquiries.map((inquiry) => (
+              <Grid item xs={12} sm={6} md={4} key={inquiry.id}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxShadow: 6,
+                    borderRadius: 3,
+                    transition: '0.3s',
+                    '&:hover': { transform: 'scale(1.05)' },
                   }}
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography
-                    gutterBottom
-                    variant="h5"
-                    fontWeight="bold"
-                    align="center"
-                    color="primary"
-                  >
-                    {inquiry.carModel || 'Car Model N/A'}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    color="text.secondary"
-                    align="center"
-                  >
-                    Price: {inquiry.price || 'N/A'}
-                  </Typography>
-                </CardContent>
-                <CardActions sx={{ justifyContent: 'space-around', pb: 2 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ borderRadius: 3 }}
-                    onClick={() => handleViewDetails(inquiry)}
-                  >
-                    More Details
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    sx={{ borderRadius: 3 }}
-                    onClick={() => handleOpenDialog(inquiry)}
-                  >
-                    View Seller Info
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
+                >
+                  <CardMedia
+                    component="img"
+                    height="250"
+                    image={inquiry.image}
+                    alt={inquiry.VehicleModel || inquiry.carModel || "Car"}
+                    onError={(e) => { e.target.src = "/images/default-car.jpg"; }}
+                  />
+                  <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                    <Typography
+                      gutterBottom
+                      variant="h5"
+                      fontWeight="bold"
+                      color="primary"
+                    >
+                      {inquiry.VehicleModel || inquiry.carModel || "Unknown Model"}
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                      Price: {inquiry.Price || inquiry.price || "N/A"}
+                    </Typography>
+                  </CardContent>
+                  <CardActions sx={{ justifyContent: 'space-around', pb: 2 }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      sx={{ borderRadius: 3 }}
+                      onClick={() => handleViewDetails(inquiry)}
+                    >
+                      More Details
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      sx={{ borderRadius: 3 }}
+                      onClick={() => handleOpenDialog(inquiry)}
+                    >
+                      Seller Info
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))
+          )}
         </Grid>
       </Container>
 
-      {/* Dialog Box for Seller Info */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>Seller Information</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            <strong>Name:</strong> {selectedSeller?.sellerName || 'N/A'}
-            <br />
-            <strong>Email:</strong> {selectedSeller?.sellerEmail || 'N/A'}
-            <br />
-            <strong>Phone:</strong> {selectedSeller?.sellerMobile || 'N/A'}
-          </DialogContentText>
+      {/* Seller Info Dialog */}
+      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ bgcolor: '#1976D2', color: 'white', textAlign: 'center' }}>
+          Seller Profile
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          {selectedInquiry && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Avatar sx={{ width: 80, height: 80, mb: 2, bgcolor: '#1976D2' }}>
+                {selectedInquiry.sellerName?.charAt(0)?.toUpperCase() || "?"}
+              </Avatar>
+              <Typography variant="h6" gutterBottom>
+                {selectedInquiry.sellerName || "No Name"}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                <strong>Email:</strong> {selectedInquiry.sellerEmail || "N/A"}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                <strong>Phone:</strong> {selectedInquiry.sellerMobile || "N/A"}
+              </Typography>
+            </Box>
+          )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary" variant="contained">
+        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+          <Button
+            onClick={handleCloseDialog}
+            variant="contained"
+            color="primary"
+            sx={{ borderRadius: 3, px: 3 }}
+          >
             Close
           </Button>
         </DialogActions>

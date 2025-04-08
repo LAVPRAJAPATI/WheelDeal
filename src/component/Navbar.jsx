@@ -8,7 +8,6 @@ import {
   Menu,
   Container,
   Avatar,
-  Button,
   Tooltip,
   MenuItem,
   List,
@@ -17,6 +16,7 @@ import {
   ListItemIcon,
   ListItemText,
   Drawer,
+  Button,
 } from "@mui/material";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
@@ -28,7 +28,7 @@ const settings = ["Profile", "Logout"];
 const sellerMenu = [
   { name: "Register Vehicles", path: "/Seller/Registervehicles" },
   { name: "Inquiries", path: "/Seller/Inquiries" },
-  { name: "My Cars", path: "/Seller/Cars" }
+  { name: "My Cars", path: "/Seller/Cars" },
 ];
 
 const buyerMenu = [
@@ -41,7 +41,7 @@ function Navbar() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
-  const userRole = localStorage.getItem("userRole"); // "seller" or "buyer"
+  const userRole = localStorage.getItem("userRole"); // "seller", "buyer", or null
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -78,11 +78,11 @@ function Navbar() {
       if (userRole === "seller") {
         navigate("/Seller/Profile");
       } else if (userRole === "buyer") {
-        navigate("/Buyer/Profile"); // Create this route if needed
+        navigate("/Buyer/Profile");
       }
     } else if (setting === "Logout") {
       localStorage.clear();
-      navigate("/Homepage"); // Redirect to homepage after logout
+      navigate("/Homepage");
     }
   };
 
@@ -91,59 +91,76 @@ function Navbar() {
       <AppBar position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* Left Menu Icon (Drawer Toggle) */}
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              sx={{ mr: 2 }}
-              onClick={toggleDrawer(true)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Drawer open={open} onClose={toggleDrawer(false)}>
-              {DrawerList}
-            </Drawer>
+            {/* Drawer Icon */}
+            {userRole && (
+              <>
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="open drawer"
+                  sx={{ mr: 2 }}
+                  onClick={toggleDrawer(true)}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Drawer open={open} onClose={toggleDrawer(false)}>
+                  {DrawerList}
+                </Drawer>
+              </>
+            )}
 
-            {/* Center Logo or Title */}
+            {/* Title */}
             <Typography
               variant="h6"
               component="div"
-              sx={{ flexGrow: 1, fontWeight: "bold" }}
+              sx={{ flexGrow: 1, fontWeight: "bold", ml: 2 }}
             >
-        
+              Wheel Deal
             </Typography>
 
-            {/* Right Avatar Dropdown */}
+            {/* Right Side - Avatar if logged in, else Login/Register */}
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="User" src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={() => handleSettingClick(setting)}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
+              {userRole ? (
+                <>
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <Avatar alt="User" src="/static/images/avatar/2.jpg" />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: "45px" }}
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    {settings.map((setting) => (
+                      <MenuItem key={setting} onClick={() => handleSettingClick(setting)}>
+                        <Typography textAlign="center">{setting}</Typography>
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </>
+              ) : (
+                <>
+                  <Button color="inherit" onClick={() => navigate("/Login")}>
+                    Login
+                  </Button>
+                  <Button color="inherit" onClick={() => navigate("/Register")}>
+                    Register
+                  </Button>
+                </>
+              )}
             </Box>
           </Toolbar>
         </Container>
@@ -153,3 +170,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

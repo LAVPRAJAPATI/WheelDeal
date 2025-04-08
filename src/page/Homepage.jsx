@@ -272,8 +272,9 @@ function Homepage() {
 
   const handleInquiry = async (car) => {
     const buyerEmail = localStorage.getItem("userEmail");
+    const userRole = localStorage.getItem("userRole");
 
-    if (!buyerEmail) {
+    if (!buyerEmail || userRole !== "buyer") {
       alert("Please log in as a buyer to make an inquiry.");
       navigate("/Buyer/Login");
       return;
@@ -514,7 +515,4 @@ function Homepage() {
 }
 
 export default Homepage;
-
-
-
 

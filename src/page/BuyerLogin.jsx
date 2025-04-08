@@ -7,8 +7,9 @@ import {
   Typography,
   Alert,
 } from "@mui/material";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 function BuyerLogin() {
@@ -43,16 +44,34 @@ function BuyerLogin() {
       const user = userCredential.user;
       const token = await user.getIdToken();
 
-      // ✅ Store required info in localStorage
+      // 🔍 Check if user exists in buyer_registration
+      const q = query(
+        collection(db, "buyer_registration"),
+        where("Email", "==", user.email)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        alert("User not found in buyer registration. Redirecting...");
+        navigate("/Buyer/Registration");
+        return;
+      }
+
+      // ✅ Store info in localStorage
       localStorage.setItem("authToken", token);
       localStorage.setItem("userRole", "buyer");
-      localStorage.setItem("userEmail", user.email); // <-- Required for BuyerCars
+      localStorage.setItem("userEmail", user.email);
 
       console.log("Login successful:", user);
       navigate("/Buyer/Cars");
     } catch (err) {
       console.error("Login error:", err);
-      setError(err.message);
+      if (err.code === "auth/user-not-found") {
+        alert("Authentication failed. Redirecting to registration...");
+        navigate("/Buyer/Registration");
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -171,3 +190,4 @@ function BuyerLogin() {
 }
 
 export default BuyerLogin;
+

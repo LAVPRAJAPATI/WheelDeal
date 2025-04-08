@@ -14,6 +14,8 @@ import SellerCars from "./page/SellerCars";
 import { BrowserRouter, Route, Routes, Link } from "react-router-dom";
 import Navbar from "./component/Navbar";
 import CarDetails from "./page/CarDetails";
+import Login from "./page/Login";
+import Register from "./page/Register";
 
 function App() {
   return (
@@ -29,15 +31,14 @@ function App() {
           <Route path="/Seller/Profile" Component={SellerProfile} />
           <Route path="/Seller/Login" Component={SellerLogin} />
           <Route path="/Seller/Inquiries" Component={SellerInquiries} />
-          <Route
-            path="/Seller/Registervehicles"
-            Component={SellerRegistervehicles}
-          />
+          <Route path="/Seller/Registervehicles" Component={SellerRegistervehicles}/>
           <Route path="/Seller/Registration" Component={SellerRegistration} />
           <Route path="/Buyer/Login" Component={BuyerLogin} />
           <Route path="/Buyer/Registration" Component={BuyerRegistration} />
           <Route path="/Buyer/Cars" Component={BuyerCars} />
           <Route path="/Buyer/Pastinquiries" Component={BuyerPastinquiries} />
+          <Route path="/Login" Component={Login} />
+          <Route path="/Register" Component={Register} />
         </Routes>
       </BrowserRouter>
     </div>
