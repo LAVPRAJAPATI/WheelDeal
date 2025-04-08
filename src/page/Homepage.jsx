@@ -130,6 +130,54 @@ function Homepage() {
     }
   };
 
+  const handleBuyNow = async (car) => {
+    const buyerEmail = localStorage.getItem("userEmail");
+    const userRole = localStorage.getItem("userRole");
+
+    if (!buyerEmail || userRole !== "buyer") {
+      alert("Please log in as a buyer to proceed with purchase.");
+      navigate("/Buyer/Login");
+      return;
+    }
+
+    try {
+      const amount = parseFloat(car.Price) ; // in paise
+
+      const options = {
+        key: "rzp_test_13Q0Lcg00AjXFM", // Replace with your Razorpay Key ID
+        amount: amount,
+        currency: "INR",
+        name: "WheelDeal",
+        description: `Buying ${car.VehicleModel}`,
+        image: "/logo.png",
+        handler: async function (response) {
+          alert("Payment Successful! ID: " + response.razorpay_payment_id);
+
+          // Save the order to Firestore
+          await addDoc(collection(db, "orders"), {
+            carId: car.id,
+            carModel: car.VehicleModel,
+            buyerEmail: buyerEmail,
+            paymentId: response.razorpay_payment_id,
+            amount: amount / 100,
+            timestamp: new Date(),
+          });
+        },
+        prefill: {
+          email: buyerEmail,
+        },
+        theme: {
+          color: "#1976d2",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment Error:", error);
+    }
+  };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedCar(null);
@@ -138,7 +186,6 @@ function Homepage() {
 
   return (
     <div>
-      {/* Hero Banner */}
       <Box
         sx={{
           backgroundImage:
@@ -162,7 +209,6 @@ function Homepage() {
         </Container>
       </Box>
 
-      {/* Featured Cars */}
       <Container sx={{ py: 10 }} maxWidth="lg">
         <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
           Featured Cars
@@ -197,10 +243,11 @@ function Homepage() {
                       {car.VehicleModel}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
-                      Price: {car.Price}
+                      Price: ₹{car.Price}
                     </Typography>
                   </CardContent>
-                  <CardActions sx={{ justifyContent: "center", pb: 2 }}>
+                  <CardActions sx={{ flexDirection: "column", gap: 1, pb: 2 }}>
+                    <Box sx={{ display: "flex", gap: 1 }}>
                     <Button
                       variant="contained"
                       color="primary"
@@ -217,6 +264,15 @@ function Homepage() {
                     >
                       Inquiry
                     </Button>
+                    </Box>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      sx={{ borderRadius: 3, mt: 1, width: "80%" }}
+                      onClick={() => handleBuyNow(car)}
+                    >
+                      Buy Now
+                    </Button>
                   </CardActions>
                 </Card>
               </Grid>
@@ -229,28 +285,14 @@ function Homepage() {
         </Grid>
       </Container>
 
-      {/* Seller Details Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} PaperComponent={Paper}>
-        <DialogTitle
-          sx={{
-            backgroundColor: "#1976d2",
-            color: "white",
-            textAlign: "center",
-          }}
-        >
+        <DialogTitle sx={{ backgroundColor: "#1976d2", color: "white", textAlign: "center" }}>
           Seller Details
         </DialogTitle>
         <DialogContent dividers>
           {sellerDetails ? (
             <Box textAlign="center" p={2}>
-              <Avatar
-                sx={{
-                  bgcolor: "#1976d2",
-                  width: 56,
-                  height: 56,
-                  margin: "0 auto",
-                }}
-              >
+              <Avatar sx={{ bgcolor: "#1976d2", width: 56, height: 56, margin: "0 auto" }}>
                 {sellerDetails.Name?.charAt(0) || "S"}
               </Avatar>
               <Typography mt={2} variant="h6" fontWeight="bold">
@@ -274,29 +316,20 @@ function Homepage() {
         </DialogActions>
       </Dialog>
 
-      {/* About Us & Footer */}
       <Box sx={{ backgroundColor: "#f5f5f5", py: 6 }}>
         <Container maxWidth="md">
           <Typography variant="h5" fontWeight="bold" gutterBottom align="center">
             About Us
           </Typography>
           <Typography variant="body1" align="center" color="text.secondary">
-            WheelDeal is a car listing platform designed to connect buyers and
-            sellers seamlessly. We provide a transparent and easy-to-use interface
-            where users can browse, list, and inquire about vehicles.
+            WheelDeal is a car listing platform designed to connect buyers and sellers
+            seamlessly. We provide a transparent and easy-to-use interface where users
+            can browse, list, and inquire about vehicles.
           </Typography>
         </Container>
       </Box>
 
-      <Box
-        sx={{
-          bgcolor: "primary.dark",
-          color: "white",
-          p: 6,
-          textAlign: "center",
-        }}
-        component="footer"
-      >
+      <Box sx={{ bgcolor: "primary.dark", color: "white", p: 6, textAlign: "center" }} component="footer">
         <Typography variant="h6" align="center" gutterBottom>
           WheelDeal
         </Typography>

@@ -50,7 +50,6 @@ function BuyerCars() {
         console.error("Error fetching vehicles:", error);
       }
     };
-
     fetchCars();
   }, []);
 
@@ -79,17 +78,18 @@ function BuyerCars() {
         alert("Buyer not found.");
         return;
       }
+
       const buyerData = buyerSnapshot.docs[0].data();
       const buyerId = buyerData.buyerId;
-
       const sellerId = car.sellerId;
+
       const sellerRef = doc(db, "seller_registration", sellerId);
       const sellerSnap = await getDoc(sellerRef);
-
       if (!sellerSnap.exists()) {
         alert("Seller not found.");
         return;
       }
+
       const sellerData = sellerSnap.data();
 
       const existingInquiryQuery = query(
@@ -113,7 +113,7 @@ function BuyerCars() {
         vehicleId: car.id,
         VehicleModel: car.VehicleModel,
         price: car.Price,
-        sellerId: sellerId,
+        sellerId,
         sellerEmail: sellerData.Email,
         buyerId,
         buyerEmail,
@@ -134,6 +134,30 @@ function BuyerCars() {
       console.error("Error submitting inquiry:", error);
       alert("Failed to send inquiry.");
     }
+  };
+
+  const handleBuyNow = async (car) => {
+    const amount = parseFloat(car.Price) ;
+
+    const options = {
+      key: "rzp_test_13Q0Lcg00AjXFM", // Replace with your Razorpay Key ID
+      amount: amount,
+      currency: "INR",
+      name: "Car Buyer App",
+      description: `Payment for ${car.VehicleModel}`,
+      handler: function (response) {
+        alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+      },
+      prefill: {
+        email: localStorage.getItem("userEmail") || "",
+      },
+      theme: {
+        color: "#1976d2",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   const handleCloseDialog = () => {
@@ -159,12 +183,7 @@ function BuyerCars() {
         <Typography
           variant="h6"
           align="center"
-          sx={{
-            color: "#007bb2",
-            mt: 1,
-            fontStyle: "italic",
-            opacity: 0.9,
-          }}
+          sx={{ color: "#007bb2", mt: 1, fontStyle: "italic", opacity: 0.9 }}
         >
           Find your dream car today!
         </Typography>
@@ -233,33 +252,39 @@ function BuyerCars() {
                       Price: {car.Price}
                     </Typography>
                   </CardContent>
-                  <CardActions sx={{ justifyContent: "center", pb: 2 }}>
+                  <CardActions sx={{ flexDirection: "column", gap: 1, pb: 2 }}>
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ borderRadius: 3, px: 3 }}
+                        onClick={() => handleViewDetails(car)}
+                      >
+                        More Details
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        sx={{ borderRadius: 3, px: 3 }}
+                        onClick={() => handleInquiry(car)}
+                      >
+                        Inquiry
+                      </Button>
+                    </Box>
                     <Button
                       variant="contained"
-                      color="primary"
-                      sx={{ borderRadius: 3, px: 3 }}
-                      onClick={() => handleViewDetails(car)}
+                      color="success"
+                      sx={{ borderRadius: 3, mt: 1, width: "80%" }}
+                      onClick={() => handleBuyNow(car)}
                     >
-                      More Details
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      sx={{ borderRadius: 3, px: 3 }}
-                      onClick={() => handleInquiry(car)}
-                    >
-                      Inquiry
+                      Buy Now
                     </Button>
                   </CardActions>
                 </Card>
               </Grid>
             ))
           ) : (
-            <Typography
-              variant="h6"
-              align="center"
-              sx={{ mt: 4, width: "100%" }}
-            >
+            <Typography variant="h6" align="center" sx={{ mt: 4, width: "100%" }}>
               No vehicles available at the moment.
             </Typography>
           )}
@@ -268,11 +293,7 @@ function BuyerCars() {
 
       <Dialog open={openDialog} onClose={handleCloseDialog} PaperComponent={Paper}>
         <DialogTitle
-          sx={{
-            backgroundColor: "#1976d2",
-            color: "white",
-            textAlign: "center",
-          }}
+          sx={{ backgroundColor: "#1976d2", color: "white", textAlign: "center" }}
         >
           Seller Details
         </DialogTitle>

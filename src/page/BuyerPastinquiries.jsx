@@ -100,6 +100,12 @@ export default function BuyerPastInquiries() {
 
       fetchInquiriesWithDetails();
     }
+
+    // Load Razorpay script
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
   }, [buyerEmail]);
 
   const handleViewDetails = (inquiry) => {
@@ -133,6 +139,36 @@ export default function BuyerPastInquiries() {
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setSelectedInquiry(null);
+  };
+
+  const handleBuyNow = (inquiry) => {
+    const amount = parseInt(inquiry.Price || inquiry.price || 0);
+    if (!amount || isNaN(amount)) {
+      alert("Invalid price");
+      return;
+    }
+
+    const options = {
+      key: "rzp_test_13Q0Lcg00AjXFM", // Replace with your Razorpay API key
+      amount: amount , // amount in paisa
+      currency: "INR",
+      name: "Car Buy & Sell",
+      description: `Buying ${inquiry.VehicleModel}`,
+      image: "/logo.png",
+      handler: function (response) {
+        alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+        // Optionally save to Firestore
+      },
+      prefill: {
+        email: buyerEmail,
+      },
+      theme: {
+        color: "#1976D2",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   return (
@@ -182,14 +218,15 @@ export default function BuyerPastInquiries() {
                       {inquiry.VehicleModel || inquiry.carModel || "Unknown Model"}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
-                      Price: {inquiry.Price || inquiry.price || "N/A"}
+                      Price: ₹{inquiry.Price || inquiry.price || "N/A"}
                     </Typography>
                   </CardContent>
-                  <CardActions sx={{ justifyContent: 'space-around', pb: 2 }}>
+                  <CardActions sx={{ flexDirection: "column", gap: 1, pb: 2 }}>
+                    <Box sx={{ display: "flex", gap: 1 }}>
                     <Button
                       variant="contained"
                       color="primary"
-                      sx={{ borderRadius: 3 }}
+                      sx={{ borderRadius: 3, px: 3 }}
                       onClick={() => handleViewDetails(inquiry)}
                     >
                       More Details
@@ -197,10 +234,19 @@ export default function BuyerPastInquiries() {
                     <Button
                       variant="outlined"
                       color="secondary"
-                      sx={{ borderRadius: 3 }}
+                      sx={{ borderRadius: 3, px: 3 }}
                       onClick={() => handleOpenDialog(inquiry)}
                     >
                       Seller Info
+                    </Button>
+                    </Box>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      sx={{ borderRadius: 3, mt: 1, width: "80%" }}
+                      onClick={() => handleBuyNow(inquiry)}
+                    >
+                      Buy Now
                     </Button>
                   </CardActions>
                 </Card>
