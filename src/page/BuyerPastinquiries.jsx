@@ -109,26 +109,8 @@ export default function BuyerPastInquiries() {
   }, [buyerEmail]);
 
   const handleViewDetails = (inquiry) => {
-    navigate(`/CarDetails/${inquiry.vehicleId}`, {
-      state: {
-        carData: {
-          Brand: inquiry.Brand || "N/A",
-          VehicleModel: inquiry.VehicleModel || inquiry.carModel || "N/A",
-          Insurance: inquiry.Insurance || "N/A",
-          CarKmsRun: inquiry.CarKmsRun || "N/A",
-          Milage: inquiry.Milage || "N/A",
-          Vehiclenumber: inquiry.Vehiclenumber || "N/A",
-          RCBookNumber: inquiry.RCBookNumber || "N/A",
-          Owners: inquiry.Owners || "N/A",
-          Price: inquiry.Price || inquiry.price || "N/A",
-          Fuel: inquiry.Fuel || "N/A",
-          Vehicletype: inquiry.Vehicletype || "N/A",
-          Transmissiontype: inquiry.Transmissiontype || "N/A",
-          MoreDetails: inquiry.MoreDetails || "No additional details provided",
-          Image: inquiry.image || "https://via.placeholder.com/400"
-        }
-      }
-    });
+    // 🔁 Navigate to CarDetails page and pass car data in state
+    navigate("/CarDetails", { state: { carData: inquiry } });
   };
 
   const handleOpenDialog = (inquiry) => {
@@ -150,7 +132,7 @@ export default function BuyerPastInquiries() {
 
     const options = {
       key: "rzp_test_13Q0Lcg00AjXFM", // Replace with your Razorpay API key
-      amount: amount , // amount in paisa
+      amount: amount * 100,
       currency: "INR",
       name: "Car Buy & Sell",
       description: `Buying ${inquiry.VehicleModel}`,
@@ -205,7 +187,7 @@ export default function BuyerPastInquiries() {
                     component="img"
                     height="250"
                     image={inquiry.image}
-                    alt={inquiry.VehicleModel || inquiry.carModel || "Car"}
+                    alt={inquiry.VehicleModel || "Car"}
                     onError={(e) => { e.target.src = "/images/default-car.jpg"; }}
                   />
                   <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
@@ -215,30 +197,30 @@ export default function BuyerPastInquiries() {
                       fontWeight="bold"
                       color="primary"
                     >
-                      {inquiry.VehicleModel || inquiry.carModel || "Unknown Model"}
+                      {inquiry.VehicleModel || "Unknown Model"}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
-                      Price: ₹{inquiry.Price || inquiry.price || "N/A"}
+                      Price: ₹{inquiry.Price || "N/A"}
                     </Typography>
                   </CardContent>
                   <CardActions sx={{ flexDirection: "column", gap: 1, pb: 2 }}>
                     <Box sx={{ display: "flex", gap: 1 }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{ borderRadius: 3, px: 3 }}
-                      onClick={() => handleViewDetails(inquiry)}
-                    >
-                      More Details
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      sx={{ borderRadius: 3, px: 3 }}
-                      onClick={() => handleOpenDialog(inquiry)}
-                    >
-                      Seller Info
-                    </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ borderRadius: 3, px: 3 }}
+                        onClick={() => handleViewDetails(inquiry)}
+                      >
+                        More Details
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        sx={{ borderRadius: 3, px: 3 }}
+                        onClick={() => handleOpenDialog(inquiry)}
+                      >
+                        Seller Info
+                      </Button>
                     </Box>
                     <Button
                       variant="contained"

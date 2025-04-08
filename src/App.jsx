@@ -16,6 +16,7 @@ import Navbar from "./component/Navbar";
 import CarDetails from "./page/CarDetails";
 import Login from "./page/Login";
 import Register from "./page/Register";
+import BuyerOrders from "./page/BuyerOrders";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/CarDetails/" Component={CarDetails} />
           <Route path="/Homepage" Component={Homepage} />
           <Route path="/Buyer/Profile" Component={BuyerProfile} />
+          <Route path="/Buyer/Orders" Component={BuyerOrders} />
           <Route path="/Seller/Profile" Component={SellerProfile} />
           <Route path="/Seller/Login" Component={SellerLogin} />
           <Route path="/Seller/Inquiries" Component={SellerInquiries} />

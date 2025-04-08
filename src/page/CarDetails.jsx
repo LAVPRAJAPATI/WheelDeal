@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -31,10 +31,22 @@ function CarDetails() {
     Vehicletype: "N/A",
     Transmissiontype: "N/A",
     MoreDetails: "No additional details provided",
-    Image: "https://via.placeholder.com/400" // Default placeholder image
+    Image: ["https://via.placeholder.com/400"]
   };
 
   const data = { ...defaultData, ...carData };
+
+  // Ensure Image is an array
+  const images = Array.isArray(data.Image) ? data.Image : [data.Image];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
 
   const containerStyle = {
     padding: "40px",
@@ -69,21 +81,49 @@ function CarDetails() {
         </Typography>
 
         <Grid container spacing={3} direction="column">
-          {/* Image Section */}
+          {/* Image Carousel Section */}
           <Grid item xs={12}>
-            <Card>
-              {data.Image ? (
-                <CardMedia
-                  component="img"
-                  height="400"
-                  image={data.Image}
-                  alt={`${data.Brand} ${data.VehicleModel}`}
-                  sx={{ objectFit: "cover" }}
-                />
-              ) : (
-                <CardContent>
-                  <Typography textAlign="center">No image available</Typography>
-                </CardContent>
+            <Card sx={{ position: "relative" }}>
+              <CardMedia
+                component="img"
+                height="400"
+                image={images[currentImageIndex]}
+                alt={`Car Image ${currentImageIndex + 1}`}
+                sx={{ objectFit: "cover" }}
+              />
+              {images.length > 1 && (
+                <>
+                  <Button
+                    onClick={handlePrevImage}
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "10px",
+                      transform: "translateY(-50%)",
+                      backgroundColor: "#ffffffcc",
+                      minWidth: "40px",
+                      borderRadius: "50%",
+                      fontSize: "20px"
+                    }}
+                  >
+                    ‹
+                  </Button>
+                  <Button
+                    onClick={handleNextImage}
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "10px",
+                      transform: "translateY(-50%)",
+                      backgroundColor: "#ffffffcc",
+                      minWidth: "40px",
+                      borderRadius: "50%",
+                      fontSize: "20px"
+                    }}
+                  >
+                    ›
+                  </Button>
+                </>
               )}
             </Card>
           </Grid>
@@ -135,4 +175,3 @@ function CarDetails() {
 }
 
 export default CarDetails;
-
