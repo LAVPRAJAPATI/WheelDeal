@@ -82,7 +82,7 @@ function Homepage() {
 
       const existingInquiryQuery = query(
         buyerPastInquiriesRef,
-        where("carId", "==", car.id),
+        where("vehicleId", "==", car.id),
         where("buyerEmail", "==", buyerEmail)
       );
       const existingInquirySnapshot = await getDocs(existingInquiryQuery);
@@ -97,7 +97,7 @@ function Homepage() {
           sellerData = {
             Name: sellerDocData.Name || "N/A",
             Email: sellerDocData.Email || "N/A",
-            Number: sellerDocData.Number || "N/A",
+            Number: sellerDocData.Mobile || "N/A",
           };
         }
       }
@@ -107,6 +107,7 @@ function Homepage() {
       setOpenDialog(true);
 
       if (!existingInquirySnapshot.empty) {
+        alert("You have already made an inquiry for this vehicle.");
         return;
       }
 
@@ -311,4 +312,3 @@ function Homepage() {
 }
 
 export default Homepage;
-
