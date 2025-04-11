@@ -173,25 +173,35 @@ function SellerRegisterVehicles() {
           ))}
 
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Fuel Type</InputLabel>
-              <Select name="Fuel" value={FormData.Fuel} onChange={handleChange}>
-                <MenuItem value="Petrol">Petrol</MenuItem>
-                <MenuItem value="Diesel">Diesel</MenuItem>
-                <MenuItem value="Electric">Electric</MenuItem>
-                <MenuItem value="Hybrid">Hybrid</MenuItem>
-              </Select>
-            </FormControl>
+          <FormControl fullWidth>
+  <InputLabel id="fuel-label">Fuel Type</InputLabel>
+  <Select
+    labelId="fuel-label"
+    name="Fuel"
+    value={FormData.Fuel}
+    onChange={handleChange}
+    label="Fuel Type" // 🔥 THIS IS REQUIRED
+  >
+    <MenuItem value="Petrol">Petrol</MenuItem>
+    <MenuItem value="Diesel">Diesel</MenuItem>
+    <MenuItem value="Electric">Electric</MenuItem>
+    <MenuItem value="Hybrid">Hybrid</MenuItem>
+  </Select>
+</FormControl>
+
           </Grid>
 
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
-              <InputLabel>Vehicle Type</InputLabel>
-              <Select
-                name="Vehicletype"
-                value={FormData.Vehicletype}
-                onChange={handleChange}
-              >
+            <InputLabel id="type-label">Vehicle Type</InputLabel>
+<Select
+  labelId="type-label"
+  name="Vehicletype"
+  value={FormData.Vehicletype}
+  onChange={handleChange}
+  label="Vehicle Type"
+>
+
                 <MenuItem value="SUV">SUV</MenuItem>
                 <MenuItem value="Sedan">Sedan</MenuItem>
                 <MenuItem value="Hatchback">Hatchback</MenuItem>
@@ -202,12 +212,15 @@ function SellerRegisterVehicles() {
 
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
-              <InputLabel>Transmission Type</InputLabel>
-              <Select
-                name="Transmissiontype"
-                value={FormData.Transmissiontype}
-                onChange={handleChange}
-              >
+            <InputLabel id="transmission-label">Transmission Type</InputLabel>
+<Select
+  labelId="transmission-label"
+  name="Transmissiontype"
+  value={FormData.Transmissiontype}
+  onChange={handleChange}
+  label="Transmission Type"
+>
+
                 <MenuItem value="Manual">Manual</MenuItem>
                 <MenuItem value="Automatic">Automatic</MenuItem>
               </Select>
