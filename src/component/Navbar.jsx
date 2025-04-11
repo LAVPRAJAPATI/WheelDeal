@@ -33,7 +33,8 @@ const sellerMenu = [
 
 const buyerMenu = [
   { name: "Cars", path: "/Buyer/Cars" },
-  { name: "Past Inquiries", path: "/Buyer/Pastinquiries" },
+  { name: "Inquiries", path: "/Buyer/Pastinquiries" },
+  { name: "Orders", path: "/Buyer/Orders" },
 ];
 
 function Navbar() {

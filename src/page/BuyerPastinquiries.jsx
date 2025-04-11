@@ -25,6 +25,8 @@ import {
   where,
   doc,
   getDoc,
+  addDoc,
+  deleteDoc
 } from 'firebase/firestore';
 
 export default function BuyerPastInquiries() {
@@ -101,7 +103,6 @@ export default function BuyerPastInquiries() {
       fetchInquiriesWithDetails();
     }
 
-    // Load Razorpay script
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
@@ -109,7 +110,6 @@ export default function BuyerPastInquiries() {
   }, [buyerEmail]);
 
   const handleViewDetails = (inquiry) => {
-    // 🔁 Navigate to CarDetails page and pass car data in state
     navigate("/CarDetails", { state: { carData: inquiry } });
   };
 
@@ -123,7 +123,7 @@ export default function BuyerPastInquiries() {
     setSelectedInquiry(null);
   };
 
-  const handleBuyNow = (inquiry) => {
+  const handleBuyNow = async (inquiry) => {
     const amount = parseInt(inquiry.Price || inquiry.price || 0);
     if (!amount || isNaN(amount)) {
       alert("Invalid price");
@@ -131,15 +131,63 @@ export default function BuyerPastInquiries() {
     }
 
     const options = {
-      key: "rzp_test_13Q0Lcg00AjXFM", // Replace with your Razorpay API key
+      key: "rzp_test_13Q0Lcg00AjXFM",
       amount: amount * 100,
       currency: "INR",
       name: "Car Buy & Sell",
       description: `Buying ${inquiry.VehicleModel}`,
       image: "/logo.png",
-      handler: function (response) {
+      handler: async function (response) {
         alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
-        // Optionally save to Firestore
+
+        try {
+          // Save order with image
+          await addDoc(collection(db, "buyer_orders"), {
+            buyerEmail: buyerEmail,
+            sellerEmail: inquiry.sellerEmail,
+            vehicleId: inquiry.vehicleId,
+            price: amount,
+            paymentId: response.razorpay_payment_id,
+            purchaseDate: new Date().toISOString(),
+            image: inquiry.image || "",
+            vehicleModel: inquiry.VehicleModel || "Unknown Model"
+          });
+
+          // Delete from RegisterVehicle
+          await deleteDoc(doc(db, "RegisterVehicle", inquiry.vehicleId));
+
+          // Delete from buyer_pastinquiry
+          const pastInquiryQuery = query(
+            collection(db, "buyer_pastinquiry"),
+            where("buyerEmail", "==", buyerEmail),
+            where("vehicleId", "==", inquiry.vehicleId)
+          );
+          const pastInquirySnap = await getDocs(pastInquiryQuery);
+          pastInquirySnap.forEach(async (docSnap) => {
+            await deleteDoc(doc(db, "buyer_pastinquiry", docSnap.id));
+          });
+
+          // Delete from seller_inquiry
+          const sellerInquiryQuery = query(
+            collection(db, "seller_inquiry"),
+            where("sellerEmail", "==", inquiry.sellerEmail),
+            where("vehicleId", "==", inquiry.vehicleId)
+          );
+          const sellerInquirySnap = await getDocs(sellerInquiryQuery);
+          sellerInquirySnap.forEach(async (docSnap) => {
+            await deleteDoc(doc(db, "seller_inquiry", docSnap.id));
+          });
+
+          alert("Order placed and vehicle removed successfully!");
+
+          // Refresh list
+          setInquiries((prev) =>
+            prev.filter((item) => item.vehicleId !== inquiry.vehicleId)
+          );
+        } catch (error) {
+          console.error("Error placing order or deleting data:", error);
+          alert("Something went wrong saving your order.");
+        }
       },
       prefill: {
         email: buyerEmail,
@@ -161,7 +209,7 @@ export default function BuyerPastInquiries() {
         gutterBottom
         sx={{ fontWeight: 'bold', color: '#0D47A1' }}
       >
-        Past Inquiries
+        Inquiries
       </Typography>
       <Container>
         <Grid container spacing={2} mt={3} justifyContent="center">

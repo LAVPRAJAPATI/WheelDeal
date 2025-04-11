@@ -66,7 +66,7 @@ export default function SellerProfile() {
         Email,
         Address,
         Mobile,
-        City,
+    
       });
 
       alert("Profile updated successfully!");
@@ -122,16 +122,6 @@ export default function SellerProfile() {
             label="Mobile"
             name="Mobile"
             value={userData.Mobile}
-            onChange={handleChange}
-            margin="normal"
-            disabled={!isEditing}
-            sx={fieldStyle}
-          />
-          <TextField
-            fullWidth
-            label="City"
-            name="City"
-            value={userData.City}
             onChange={handleChange}
             margin="normal"
             disabled={!isEditing}
