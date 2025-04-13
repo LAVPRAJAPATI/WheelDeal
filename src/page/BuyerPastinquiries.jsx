@@ -178,7 +178,7 @@ export default function BuyerPastInquiries() {
             await deleteDoc(doc(db, "seller_inquiry", docSnap.id));
           });
 
-          alert("Order placed and vehicle removed successfully!");
+          alert("Order placed successfully!");
 
           // Refresh list
           setInquiries((prev) =>
